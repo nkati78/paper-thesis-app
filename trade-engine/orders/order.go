@@ -1,6 +1,7 @@
 package orders
 
 import (
+	"github.com/paper-thesis/trade-engine/orders/data"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,12 +26,13 @@ type OrderStatus string
 const (
 	Open     OrderStatus = "open"
 	Closed   OrderStatus = "closed"
+	Filled   OrderStatus = "filled"
 	Canceled OrderStatus = "canceled"
 )
 
 type Order struct {
 	OrderID        string
-	Price          float64
+	Price          int64
 	Quantity       uint32
 	QuantityFilled uint32
 	Filled         bool
@@ -46,12 +48,12 @@ type Order struct {
 type Fill struct {
 	FillID       string
 	OrderID      string
-	FillPrice    float64
+	FillPrice    int64
 	FillQuantity uint32
 	FillTime     time.Time
 }
 
-func NewOrder(price float64, quantity uint32, userID string, symbol string, side TradeSide, orderType OrderType) *Order {
+func NewOrder(price int64, quantity uint32, userID string, symbol string, side TradeSide, orderType OrderType) *Order {
 	return &Order{
 		OrderID:   uuid.New().String(),
 		Price:     price,
@@ -102,7 +104,7 @@ func OrderBookRemove(orders []*Order, orderID string) []*Order {
 	return orders
 }
 
-func GetOrderByPrice(orders []*Order, price float64) *Order {
+func GetOrderByPrice(orders []*Order, price int64) *Order {
 	for _, o := range orders {
 		if o.Price == price {
 			return o
@@ -110,4 +112,16 @@ func GetOrderByPrice(orders []*Order, price float64) *Order {
 	}
 
 	return nil
+}
+
+func (o Order) ToDB() data.Order {
+	return data.Order{
+		Price:    o.Price,
+		Quantity: o.Quantity,
+		Side:     string(o.Side),
+		Type:     string(o.Type),
+		Symbol:   o.Symbol,
+		UserID:   o.UserID,
+		Status:   string(o.Status),
+	}
 }
