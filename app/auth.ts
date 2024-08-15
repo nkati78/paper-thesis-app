@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, {User} from "next-auth";
 import Google from "@auth/core/providers/google";
 import Credentials from "@auth/core/providers/credentials";
 import settings from "./lib/settings";
@@ -10,10 +10,11 @@ interface credToken extends JWT {
     username: string,
     firstName: string,
     lastName: string,
+    email: string,
     token: string,
     name: string,
     connection?: string
-    image?: string,
+    image: string,
 }
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
@@ -28,16 +29,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         },
         authorize: async (credentials) => {
 
-            let user = null;
+            let user;
 
             if (credentials.type === 'login') {
 
                 const body = {
                     username: credentials.email,
                     password: credentials.password
-                }
+                };
 
-                let user_fetch = await fetch(settings.pt_api.login, {
+                const user_fetch = await fetch(settings.pt_api.login, {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json",
@@ -55,7 +56,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                         LastName: string
                     }
 
-                    let augmented_response = user_fetch.user as augmented_api_login_response;
+                    const augmented_response = user_fetch.user as augmented_api_login_response;
 
                     user = {
                         id: augmented_response.ID,
@@ -67,11 +68,15 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
                     // TODO: Remove augmmentation once responses are consistent
 
-                    user.token = user_fetch.token;
+                    user!.token = user_fetch.token;
 
                 } else if (user_fetch.message) {
 
                     throw new Error(user_fetch.message);
+
+                } else {
+
+                    user = null;
 
                 }
 
@@ -85,9 +90,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                     email: credentials.email,
                     firstName: credentials.firstName,
                     lastName: credentials.lastName
-                }
+                };
 
-                let user_fetch = await fetch(settings.pt_api.register, {
+                const user_fetch = await fetch(settings.pt_api.register, {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json",
@@ -133,41 +138,45 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         //     return !!auth
         //
         // },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         async signIn({ user, account, profile, email, credentials }) {
 
             return true;
 
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         async redirect({ url, baseUrl }) {
 
             return baseUrl;
 
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         async session({ session, user, token }) {
 
-            let aug_tok = token as credToken;
+            const aug_tok = token as credToken;
 
             if (aug_tok) {
 
                 // TODO; Figure out why auth.js is having so much trouble augmenting this type
-                session.user = {
-                    id: aug_tok.id,
-                    username: aug_tok.username,
-                    firstName: aug_tok.firstName,
-                    lastName: aug_tok.lastName,
-                    name: aug_tok.firstName + ' ' + aug_tok.lastName,
-                    email: aug_tok.email,
-                    token: aug_tok.token,
-                    connection: aug_tok.connection,
-                    image: aug_tok.image
-                };
+                // TODO: Rewrite this after login endpoint changes
+                // session.user = {
+                //     id: aug_tok.id,
+                //     username: aug_tok.username,
+                //     firstName: aug_tok.firstName,
+                //     lastName: aug_tok.lastName,
+                //     name: aug_tok.firstName + ' ' + aug_tok.lastName,
+                //     email: aug_tok.email,
+                //     token: aug_tok.token,
+                //     connection: aug_tok.connection,
+                //     image: aug_tok.image
+                // };
 
             }
 
             return session;
 
         },
-        async jwt({ token, user, account, profile, isNewUser }) {
+        async jwt({ token, user, account }) {
 
             if (account?.provider === 'credentials' && user) {
 
@@ -180,7 +189,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
             if (account?.provider === 'google' && user) {
 
-            //     TODO: At this point we need to hit the DB and get the user information so we can build the token. Will do once we have an endpoint worked out
+                //     TODO: At this point we need to hit the DB and get the user information so we can build the token. Will do once we have an endpoint worked out
 
             }
 
@@ -190,4 +199,4 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
     }
 
-})
+});

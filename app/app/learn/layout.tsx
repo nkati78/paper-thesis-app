@@ -2,7 +2,7 @@ import React from "react";
 import {classes} from "../../lib/std";
 
 export default function LearnLayout ({
-   children,
+    children,
 }: {
     children: React.ReactNode
 }) {

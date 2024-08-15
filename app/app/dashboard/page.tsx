@@ -45,26 +45,27 @@ export default function Component () {
 
         (async () => {
 
-            if (session && session.user.email && (user.email !== session?.user.email)) {
+            // TODO: Rewrite this based on new login flow
+            if (session && session.user?.email && (user.email !== session.user.email)) {
 
                 // TODO: This will get changed slightly when we have the proper user endpoint
-                console.log(session)
-                console.log(user)
+                console.log(session);
+                console.log(user);
 
-                const fresh_user_info = {
-                    fn: session.user.firstName,
-                    ln: session.user.lastName,
-                    email: session.user.email,
-                    dark_mode: user.dark_mode,
-                    current_path: path,
-                    previous_path: path
-                }
+                // const fresh_user_info = {
+                //     fn: session.user.firstName,
+                //     ln: session.user.lastName,
+                //     email: session.user.email,
+                //     dark_mode: user.dark_mode,
+                //     current_path: path,
+                //     previous_path: path
+                // };
 
-                dispatch(updateUser(fresh_user_info))
+                // dispatch(updateUser(fresh_user_info));
 
             }
 
-        //     TODO: Map out state for watchlist after api call
+            //     TODO: Map out state for watchlist after api call
 
         })();
 

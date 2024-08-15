@@ -23,11 +23,15 @@ export default function Login () {
 
     const handleSignIn = async (cred: pt_login, error: string) => {
 
-        if ((cred.email?.length > 0) && (cred.password?.length > 0) && (error.length === 0)) {
+        if (cred && (cred.email!.length > 0) && (cred.password!.length > 0) && (error.length === 0)) {
 
             try {
 
-                await signIn('credentials', cred);
+                await signIn('credentials', {
+                    email: cred.email,
+                    password: cred.password,
+                    type: cred.type
+                });
 
                 // console.log(res)
                 //
@@ -48,18 +52,18 @@ export default function Login () {
             } catch (err) {
 
                 console.log(err);
-                set_error('Test')
+                set_error('Test');
 
             }
 
         }
 
-    }
+    };
 
     const handleInputChange: ChangeEventHandler = async (e) => {
 
         const input = e.target as HTMLInputElement;
-        const id = input.id
+        const id = input.id;
 
         if (input.value && id === 'password') {
 
@@ -74,7 +78,7 @@ export default function Login () {
         }
 
 
-    }
+    };
 
     return (
         <div className={classes([dark_mode ? 'dark' : ''])}>
@@ -115,7 +119,7 @@ export default function Login () {
                                 type: 'login',
                                 // redirect: false
                             },
-                                error
+                            error
                             )}
                             className={classes(['w-64 bg-black dark:bg-white text-white dark:text-black'])}
                         >
@@ -155,7 +159,7 @@ export default function Login () {
                     </div>
                 </div>
                 <button className={'text-white dark:text-black'} onClick={() => set_dark_mode(!dark_mode)}>.
-                {/*    TODO: Remove this button once dark mode gets moved to state */}
+                    {/*    TODO: Remove this button once dark mode gets moved to state */}
                 </button>
             </div>
         </div>

@@ -30,13 +30,19 @@ export default function Login () {
 
     const handleSignIn = async (acc: pt_register, error: string) => {
 
-        if ((acc.username?.length > 0) && (acc.email?.length > 0) && (acc.firstName?.length > 0) && (acc.lastName?.length > 0) && (acc.password?.length > 0) && (error.length === 0)) {
+        if ((acc.username!.length > 0) && (acc.email!.length > 0) && (acc.firstName!.length > 0) && (acc.lastName!.length > 0) && (acc.password!.length > 0) && (error.length === 0)) {
 
             set_error('');
 
             try {
 
-                await signIn('credentials', acc);
+                await signIn('credentials', {
+                    email: acc.email ,
+                    password: acc.password ,
+                    username: acc.username,
+                    firstName: acc.firstName ,
+                    lastName: acc.lastName
+                });
 
             } catch (err) {
 
@@ -50,7 +56,7 @@ export default function Login () {
 
         }
 
-    }
+    };
 
     const handleInputChange: ChangeEventHandler = async (e) => {
 
@@ -122,7 +128,7 @@ export default function Login () {
 
         set_create_info(new_state);
 
-    }
+    };
 
 
     return (
@@ -238,7 +244,7 @@ export default function Login () {
                     </div>
                 </div>
                 <button className={'text-white dark:text-black'} onClick={() => set_dark_mode(!dark_mode)}>.
-                {/*    TODO: Remove this button once dark mode is moved into state */}
+                    {/*    TODO: Remove this button once dark mode is moved into state */}
                 </button>
             </div>
         </div>

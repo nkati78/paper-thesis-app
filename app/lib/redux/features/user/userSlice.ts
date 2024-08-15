@@ -31,7 +31,7 @@ const userSlice = createSlice({
         },
         updateUser: (state, action: PayloadAction<any>) => {
 
-            console.log(state, action)
+            console.log(state, action);
             // state = {
             //     ...state,
             //     action.payload

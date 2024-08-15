@@ -32,9 +32,9 @@ export default function Settings() {
 
     useEffect(() => {
 
-        console.log(user_info)
+        console.log(user_info);
 
-    }, [])
+    }, []);
 
     return (
         <div className="flex min-h-screen">
@@ -63,7 +63,7 @@ export default function Settings() {
                             </div>
                         ) : (
                             <div className="flex items-center space-x-4">
-                               <Skeleton className="h-12 w-12 rounded-full" />
+                                <Skeleton className="h-12 w-12 rounded-full" />
                                 <div className="space-y-2">
                                     <Skeleton className="h-4 w-[250px]" />
                                     <Skeleton className="h-4 w-[200px]" />
@@ -184,7 +184,7 @@ export default function Settings() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 // function HomeIcon(props) {
@@ -267,7 +267,7 @@ function PaperclipIcon(props) {
         >
             <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
         </svg>
-    )
+    );
 }
 
 
@@ -290,7 +290,7 @@ function PenToolIcon(props) {
             <path d="m2.3 2.3 7.286 7.286" />
             <circle cx="11" cy="11" r="2" />
         </svg>
-    )
+    );
 }
 
 
@@ -311,7 +311,7 @@ function PowerIcon(props) {
             <path d="M12 2v10" />
             <path d="M18.4 6.6a9 9 0 1 1-12.77.04" />
         </svg>
-    )
+    );
 }
 
 
@@ -331,7 +331,7 @@ function ShieldIcon(props) {
         >
             <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
         </svg>
-    )
+    );
 }
 
 
@@ -353,7 +353,7 @@ function TestTubeIcon(props) {
             <path d="M8.5 2h7" />
             <path d="M14.5 16h-5" />
         </svg>
-    )
+    );
 }
 
 
@@ -374,7 +374,7 @@ function TrendingUpIcon(props) {
             <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
             <polyline points="16 7 22 7 22 13" />
         </svg>
-    )
+    );
 }
 
 
@@ -438,5 +438,5 @@ function WebhookIcon(props) {
             <path d="m6 17 3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06" />
             <path d="m12 6 3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8" />
         </svg>
-    )
+    );
 }

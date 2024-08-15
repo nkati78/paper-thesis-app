@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Progress } from "../components/shadecn_components/ui/progress"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../components/shadecn_components/ui/card"
-import { Button } from "../components/shadecn_components/ui/button"
+import { useState } from "react";
+import { Progress } from "../components/shadecn_components/ui/progress";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../components/shadecn_components/ui/card";
+import { Button } from "../components/shadecn_components/ui/button";
 import { useAppDispatch } from "../../lib/redux/hooks";
 import { incrementedByAmountPC } from "../../lib/redux/features/pc/pcSlice";
 import {classes} from "../../lib/std";
 
 export default function Component() {
-    const [progress, setProgress] = useState(0)
-    const [completedModules, setCompletedModules] = useState([])
+    const [progress, setProgress] = useState(0);
+    const [completedModules, setCompletedModules] = useState<number[]>([]);
 
     // TODO: Base dark mode off user state value
 
@@ -116,19 +116,19 @@ export default function Component() {
                 </div>
             ),
         },
-    ]
-    const handleModuleCompletion = (moduleId) => {
+    ];
+    const handleModuleCompletion = (moduleId: number) => {
 
         const module_count = modules.length;
         const completed_count = completedModules.length === 0 ? 1 : (completedModules.length === modules.length ? completedModules.length : completedModules.length + 1);
-        console.log(module_count, completed_count)
+        console.log(module_count, completed_count);
 
 
-        setCompletedModules([...completedModules, moduleId])
-        setProgress((completed_count / module_count) * 100)
+        setCompletedModules([...completedModules, moduleId]);
+        setProgress((completed_count / module_count) * 100);
         dispatch(incrementedByAmountPC(modules[moduleId - 1].reward));
 
-    }
+    };
     return (
         <div className="flex flex-col gap-8">
             <div className="md:flex items-center justify-between">
@@ -164,7 +164,7 @@ export default function Component() {
                 ))}
             </div>
         </div>
-    )
+    );
 }
 
 function CheckIcon(props) {
@@ -183,7 +183,7 @@ function CheckIcon(props) {
         >
             <path d="M20 6 9 17l-5-5" />
         </svg>
-    )
+    );
 }
 
 

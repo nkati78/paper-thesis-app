@@ -1,4 +1,4 @@
-import { Button } from "../components/shadecn_components/ui/button"
+import { Button } from "../components/shadecn_components/ui/button";
 
 export default function Component() {
 
@@ -160,7 +160,7 @@ export default function Component() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 function DollarSignIcon(props) {
@@ -180,7 +180,7 @@ function DollarSignIcon(props) {
             <line x1="12" x2="12" y1="2" y2="22" />
             <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
         </svg>
-    )
+    );
 }
 
 
@@ -202,7 +202,7 @@ function WalletCardsIcon(props) {
             <path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2" />
             <path d="M3 11h3c.8 0 1.6.3 2.1.9l1.1.9c1.6 1.6 4.1 1.6 5.7 0l1.1-.9c.5-.5 1.3-.9 2.1-.9H21" />
         </svg>
-    )
+    );
 }
 
 

@@ -9,8 +9,8 @@ export interface pt_register {
 }
 
 export interface pt_login {
-    email?: string,
-    password?: string,
+    email: string | undefined,
+    password: string | undefined,
     type: string,
     redirect?: boolean
 }

@@ -1,9 +1,11 @@
 import * as React from "react";
 import { SVGProps, useState } from "react";
 
-export default function TransparentLogo (props: SVGProps<any>) {
+export default function TransparentLogo (props: SVGProps<never>) {
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [width, set_width] = useState<number>(1100);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [height, set_height] = useState<number>(200);
 
     // useEffect(() => {

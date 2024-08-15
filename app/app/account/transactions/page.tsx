@@ -1,13 +1,12 @@
+"use client";
 
-"use client"
-
-import { useState, useMemo } from "react"
-import { Label } from "../../components/shadecn_components/ui/label"
-import { Input } from "../../components/shadecn_components/ui/input"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "../../components/shadecn_components/ui/dropdown-menu"
-import { Button } from "../../components/shadecn_components/ui/button"
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../components/shadecn_components/ui/table"
-import { Badge } from "../../components/shadecn_components/ui/badge"
+import { useState, useMemo } from "react";
+import { Label } from "../../components/shadecn_components/ui/label";
+import { Input } from "../../components/shadecn_components/ui/input";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "../../components/shadecn_components/ui/dropdown-menu";
+import { Button } from "../../components/shadecn_components/ui/button";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../components/shadecn_components/ui/table";
+import { Badge } from "../../components/shadecn_components/ui/badge";
 
 export default function Component() {
     const [filters, setFilters] = useState({
@@ -15,9 +14,9 @@ export default function Component() {
         endDate: null,
         type: "all",
         ticker: "all",
-    })
-    const [sortColumn, setSortColumn] = useState("date")
-    const [sortDirection, setSortDirection] = useState("asc")
+    });
+    const [sortColumn, setSortColumn] = useState("date");
+    const [sortDirection, setSortDirection] = useState("asc");
     const transactions = [
         {
             id: 1,
@@ -73,48 +72,48 @@ export default function Component() {
             price: 325.5,
             amount: 100,
         },
-    ]
+    ];
     const filteredTransactions = useMemo(() => {
         return transactions
             .filter((transaction) => {
                 if (filters.startDate && new Date(transaction.date) < new Date(filters.startDate)) {
-                    return false
+                    return false;
                 }
                 if (filters.endDate && new Date(transaction.date) > new Date(filters.endDate)) {
-                    return false
+                    return false;
                 }
                 if (filters.type !== "all" && transaction.type !== filters.type) {
-                    return false
+                    return false;
                 }
                 if (filters.ticker !== "all" && transaction.ticker !== filters.ticker) {
-                    return false
+                    return false;
                 }
-                return true
+                return true;
             })
             .sort((a, b) => {
                 if (sortDirection === "asc") {
-                    return a[sortColumn] > b[sortColumn] ? 1 : -1
+                    return a[sortColumn] > b[sortColumn] ? 1 : -1;
                 } else {
-                    return a[sortColumn] < b[sortColumn] ? 1 : -1
+                    return a[sortColumn] < b[sortColumn] ? 1 : -1;
                 }
-            })
-    }, [filters, transactions, sortColumn, sortDirection])
+            });
+    }, [filters, transactions, sortColumn, sortDirection]);
     const totalGains = useMemo(() => {
         return filteredTransactions.reduce((total, transaction) => {
             if (transaction.type === "Sell") {
-                return total + transaction.price * transaction.amount
+                return total + transaction.price * transaction.amount;
             }
-            return total
-        }, 0)
-    }, [filteredTransactions])
+            return total;
+        }, 0);
+    }, [filteredTransactions]);
     const totalLosses = useMemo(() => {
         return filteredTransactions.reduce((total, transaction) => {
             if (transaction.type === "Buy") {
-                return total + transaction.price * transaction.amount
+                return total + transaction.price * transaction.amount;
             }
-            return total
-        }, 0)
-    }, [filteredTransactions])
+            return total;
+        }, 0);
+    }, [filteredTransactions]);
     return (
         <div className="flex flex-col gap-6 mx-auto w-full min-h-screen bg-background text-foreground p-8 md:p-12 lg:p-16">
             <h1 className="text-3xl font-bold">Order History</h1>
@@ -185,10 +184,10 @@ export default function Component() {
                                 className="cursor-pointer"
                                 onClick={() => {
                                     if (sortColumn === "date") {
-                                        setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+                                        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
                                     } else {
-                                        setSortColumn("date")
-                                        setSortDirection("asc")
+                                        setSortColumn("date");
+                                        setSortDirection("asc");
                                     }
                                 }}
                             >
@@ -199,10 +198,10 @@ export default function Component() {
                                 className="cursor-pointer"
                                 onClick={() => {
                                     if (sortColumn === "type") {
-                                        setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+                                        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
                                     } else {
-                                        setSortColumn("type")
-                                        setSortDirection("asc")
+                                        setSortColumn("type");
+                                        setSortDirection("asc");
                                     }
                                 }}
                             >
@@ -213,10 +212,10 @@ export default function Component() {
                                 className="cursor-pointer"
                                 onClick={() => {
                                     if (sortColumn === "status") {
-                                        setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+                                        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
                                     } else {
-                                        setSortColumn("status")
-                                        setSortDirection("asc")
+                                        setSortColumn("status");
+                                        setSortDirection("asc");
                                     }
                                 }}
                             >
@@ -229,10 +228,10 @@ export default function Component() {
                                 className="text-right cursor-pointer"
                                 onClick={() => {
                                     if (sortColumn === "amount") {
-                                        setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+                                        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
                                     } else {
-                                        setSortColumn("amount")
-                                        setSortDirection("asc")
+                                        setSortColumn("amount");
+                                        setSortDirection("asc");
                                     }
                                 }}
                             >
@@ -245,10 +244,10 @@ export default function Component() {
                                 className="cursor-pointer"
                                 onClick={() => {
                                     if (sortColumn === "ticker") {
-                                        setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+                                        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
                                     } else {
-                                        setSortColumn("ticker")
-                                        setSortDirection("asc")
+                                        setSortColumn("ticker");
+                                        setSortDirection("asc");
                                     }
                                 }}
                             >
@@ -269,17 +268,17 @@ export default function Component() {
                                     <Badge variant={transaction.type === "Buy" ? "secondary" : "outline"}>{transaction.type}</Badge>
                                 </TableCell>
                                 <TableCell>
-                                    <Badge
-                                        variant={
-                                            transaction.status === "Complete"
-                                                ? "secondary bg-green-500 text-green-50"
-                                                : transaction.status === "Pending"
-                                                    ? "outline bg-yellow-500 text-yellow-50"
-                                                    : "destructive"
-                                        }
-                                    >
-                                        {transaction.status}
-                                    </Badge>
+                                    {/*<Badge*/}
+                                    {/*    variant={*/}
+                                    {/*        transaction.status === "Complete"*/}
+                                    {/*            ? "secondary bg-green-500 text-green-50"*/}
+                                    {/*            : transaction.status === "Pending"*/}
+                                    {/*                ? "outline bg-yellow-500 text-yellow-50"*/}
+                                    {/*                : "destructive"*/}
+                                    {/*    }*/}
+                                    {/*>*/}
+                                    {/*    {transaction.status}*/}
+                                    {/*</Badge>*/}
                                 </TableCell>
                                 <TableCell className="text-right">{transaction.amount}</TableCell>
                                 <TableCell>{transaction.ticker}</TableCell>
@@ -304,9 +303,9 @@ export default function Component() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-          <span className={`font-medium ${totalGains - totalLosses >= 0 ? "text-green-500" : "text-red-500"}`}>
+                    <span className={`font-medium ${totalGains - totalLosses >= 0 ? "text-green-500" : "text-red-500"}`}>
             Net: ${(totalGains - totalLosses).toFixed(2)}
-          </span>
+                    </span>
                     {totalGains - totalLosses >= 0 ? (
                         <ArrowUpIcon className="w-4 h-4 fill-green-500" />
                     ) : (
@@ -315,7 +314,7 @@ export default function Component() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 function ArrowDownIcon(props) {
@@ -335,7 +334,7 @@ function ArrowDownIcon(props) {
             <path d="M12 5v14" />
             <path d="m19 12-7 7-7-7" />
         </svg>
-    )
+    );
 }
 
 
@@ -356,7 +355,7 @@ function ArrowUpIcon(props) {
             <path d="m5 12 7-7 7 7" />
             <path d="M12 19V5" />
         </svg>
-    )
+    );
 }
 
 
@@ -376,7 +375,7 @@ function FilterIcon(props) {
         >
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
         </svg>
-    )
+    );
 }
 
 

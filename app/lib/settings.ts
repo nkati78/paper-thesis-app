@@ -5,6 +5,6 @@ const settings = {
         login: `http://localhost:8080/login`,
         orders: `http://localhost:8080/orders`
     }
-}
+};
 
 export default settings;
