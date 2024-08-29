@@ -52,7 +52,7 @@ Ports are exposed on `localhost:8080`
 ```json
   // curl -x POST http://localhost:8080/login
   {   
-    "username": "jubjub",
+    "username": "josh@paperthesis.com",
     "password": "password!"
   }
 ```

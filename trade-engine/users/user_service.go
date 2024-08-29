@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"github.com/paper-thesis/trade-engine/users/data"
 	"github.com/paper-thesis/trade-engine/users/models"
@@ -31,6 +32,16 @@ func (us UserService) CreateUser(ctx context.Context, request models.CreateUserR
 		ProviderID: request.ProviderID,
 	}
 
+	existingUser, err := us.dal.GetUserByEmail(ctx, request.Email)
+	if err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			return nil, err
+		}
+	}
+	if existingUser != nil {
+		return nil, errors.New("user already exists")
+	}
+
 	if request.Password != "" {
 		// hash the password
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
@@ -57,7 +68,7 @@ func (us UserService) CreateUser(ctx context.Context, request models.CreateUserR
 }
 
 func (us UserService) Login(ctx context.Context, request models.LoginUserRequest) (*User, error) {
-	user, err := us.dal.GetUserByUsername(ctx, request.Username)
+	user, err := us.dal.GetUserByEmail(ctx, request.Email)
 	if err != nil {
 		return nil, IncorrectEmailOrPass
 	}
