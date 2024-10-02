@@ -1,2 +1,4 @@
 node_modules/
-.svelte-ket  
+.svelte-ket  1
+/app/.next/
+app/.env
