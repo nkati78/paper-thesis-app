@@ -14,3 +14,14 @@ export interface pt_login {
     type: string,
     redirect?: boolean
 }
+
+export interface PTTransaction {
+    id: number,
+    transaction_id: string,
+    date: string,
+    type: string,
+    status: string,
+    ticker: string,
+    price: number,
+    amount: number,
+}

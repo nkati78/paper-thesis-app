@@ -5,8 +5,7 @@ import { Progress } from "../components/shadecn_components/ui/progress";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../components/shadecn_components/ui/card";
 import { Button } from "../components/shadecn_components/ui/button";
 import { useAppDispatch } from "../../lib/redux/hooks";
-import { incrementedByAmountPC } from "../../lib/redux/features/pc/pcSlice";
-import {classes} from "../../lib/std";
+import { classes } from "../../lib/std";
 
 export default function Component() {
     const [progress, setProgress] = useState(0);
@@ -15,7 +14,6 @@ export default function Component() {
     // TODO: Base dark mode off user state value
 
 
-    // const pc_count = useSelector(selectCountPC);
     const dispatch = useAppDispatch();
 
     const modules = [
@@ -126,7 +124,7 @@ export default function Component() {
 
         setCompletedModules([...completedModules, moduleId]);
         setProgress((completed_count / module_count) * 100);
-        dispatch(incrementedByAmountPC(modules[moduleId - 1].reward));
+        // dispatch(incrementedByAmountPC(modules[moduleId - 1].reward));
 
     };
     return (

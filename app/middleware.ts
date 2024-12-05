@@ -8,12 +8,20 @@ export default auth((req) => {
 
         return Response.redirect(newUrl);
 
-    } else if (!req.auth && (req.nextUrl.pathname === "/account/settings" || req.nextUrl.pathname === "/account/transactions" || req.nextUrl.pathname === "/dashboard" || req.nextUrl.pathname === "/learn" || req.nextUrl.pathname === "/shop") ) {
+    } else if (!req.auth && (req.nextUrl.pathname === "/account" || req.nextUrl.pathname === "/account/transactions" || req.nextUrl.pathname === "/dashboard") ) {
 
         const newUrl = new URL("/auth/login", req.nextUrl.origin);
 
         return Response.redirect(newUrl);
 
+    } else if (req.nextUrl.pathname === "/learn" || req.nextUrl.pathname === "/shop") {
+
+        const newUrl = new URL("/comingsoon", req.nextUrl.origin);
+
+        return Response.redirect(newUrl);
+
     }
+
+    //TODO: Add middleware to auto redirect
 
 });
