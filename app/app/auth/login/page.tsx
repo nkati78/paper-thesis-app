@@ -10,7 +10,7 @@ import TransparentLogo from "../../components/svg/transparent_logo";
 import TransparentLogoDark from "../../components/svg/transparent_logo_dark";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { pt_login } from "../../../types/pt_api";
+import { pt_login } from "../../../types/pt_types";
 
 export default function Login () {
 
@@ -137,7 +137,7 @@ export default function Login () {
                 <div className={classes(['grid justify-items-center h-52'])}>
                     <Button
                         onClick={() => signIn('google', {
-                            callbackUrl: "/account/settings"
+                            callbackUrl: "/account"
                         })}
                         className={classes(['w-64 bg-black dark:bg-white text-white dark:text-black'])}
                     >

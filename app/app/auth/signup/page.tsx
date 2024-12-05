@@ -11,7 +11,7 @@ import TransparentLogoDark from "../../components/svg/transparent_logo_dark";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Label } from "../../components/shadecn_components/ui/label";
-import { pt_register } from "../../../types/pt_api";
+import { pt_register } from "../../../types/pt_types";
 
 export default function Login () {
 
@@ -41,7 +41,8 @@ export default function Login () {
                     password: acc.password ,
                     username: acc.username,
                     firstName: acc.firstName ,
-                    lastName: acc.lastName
+                    lastName: acc.lastName,
+                    type: 'register'
                 });
 
             } catch (err) {
@@ -62,7 +63,7 @@ export default function Login () {
 
         const input = e.target as HTMLInputElement;
         const id = input.id;
-        const new_state = {...create_info};
+        const new_state = { ...create_info };
 
         if (input.value && id === 'password') {
 
@@ -221,7 +222,7 @@ export default function Login () {
                 <div className={classes(['grid justify-items-center'])}>
                     <Button
                         onClick={() => signIn('google', {
-                            redirectTo: "/account/settings"
+                            redirectTo: "/account"
                         })}
                         className={classes(['w-96 bg-black dark:bg-white text-white dark:text-black mb-5'])}
                     >

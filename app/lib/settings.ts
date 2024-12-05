@@ -1,9 +1,9 @@
 const settings = {
     pt_api: {
-        base_url: 'http://localhost:8080/',
-        register: `http://localhost:8080/register`,
-        login: `http://localhost:8080/login`,
-        orders: `http://localhost:8080/orders`
+        base_url: 'http://app:8080/',
+        register: `http://app:8080/register`,
+        login: `http://app:8080/login`,
+        orders: `http://app:8080/orders`
     }
 };
 

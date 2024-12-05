@@ -5,21 +5,24 @@ import { Button } from "../components/shadecn_components/ui/button";
 import { Input } from "../components/shadecn_components/ui/input";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../components/shadecn_components/ui/table";
 import { ResponsiveLine } from "@nivo/line";
-// import { CartesianGrid, XAxis, Line, LineChart } from "recharts";
-// import { ChartTooltipContent, ChartTooltip, ChartContainer } from "../components/shadecn_components/ui/chart";
+import { CartesianGrid, XAxis, Line, LineChart } from "recharts";
+import { ChartTooltipContent, ChartTooltip, ChartContainer } from "../components/shadecn_components/ui/chart";
 import { updateUser, selectUser } from "../../lib/redux/features/user/userSlice";
 import { useSession } from "next-auth/react";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../lib/redux/hooks";
 import { usePathname } from "next/navigation";
+import { ColorType, createChart } from "lightweight-charts";
 
 
 export default function Component () {
 
-    const { data: session } = useSession();
     const user = useSelector(selectUser);
-    const path = usePathname();
     const dispatch = useAppDispatch();
+
+    // TODO: Work out charting with lightweight charts, look for potential alternatives
+
+    console.log(user);
 
     const [leaderboardView, setLeaderboardView] = useState<string>("earnings");
     const [watchlist, setWatchlist] = useState([
@@ -31,45 +34,91 @@ export default function Component () {
     const addToWatchlist = (ticker, lastPrice, dayChangePercent, dayChangeAmount) => {
 
         setWatchlist([...watchlist, { ticker, lastPrice, dayChangePercent, dayChangeAmount }]);
-    
+
     };
     const removeFromWatchlist = (index) => {
 
         const updatedWatchlist = [...watchlist];
         updatedWatchlist.splice(index, 1);
         setWatchlist(updatedWatchlist);
-    
+
     };
+    // const [chart, setChart] = useState<HTMLElement | null>(null);
+    // const chartDiv = document.getElementById('mainChart');
+    //
+    // const chart = createChart(chartDiv!);
+    const chart_color = user.dark_mode ? '240 5% 6%' : '0 0% 100%';
 
     useEffect(() => {
 
-        (async () => {
+        if (document) {
 
-            // TODO: Rewrite this based on new login flow
-            if (session && session.user?.email && (user.email !== session.user.email)) {
+            const chartDiv = document.getElementById('mainChart');
 
-                // TODO: This will get changed slightly when we have the proper user endpoint
-                console.log(session);
-                console.log(user);
+            if (chartDiv) {
 
-                // const fresh_user_info = {
-                //     fn: session.user.firstName,
-                //     ln: session.user.lastName,
-                //     email: session.user.email,
-                //     dark_mode: user.dark_mode,
-                //     current_path: path,
-                //     previous_path: path
-                // };
+                const chart_options = {
+                    layout: {
+                        background: {
+                            type: ColorType.Solid,
+                            color: chart_color as string
+                        }
+                    }
+                };
 
-                // dispatch(updateUser(fresh_user_info));
+                const chart = createChart(chartDiv, chart_options);
+
+                const areaSeries = chart.addAreaSeries({
+                    lineColor: '#2962FF', topColor: '#2962FF',
+                    bottomColor: 'rgba(41, 98, 255, 0.28)',
+                });
+
+                areaSeries.setData([
+                    { time: '2018-12-22', value: 32.51 },
+                    { time: '2018-12-23', value: 31.11 },
+                    { time: '2018-12-24', value: 27.02 },
+                    { time: '2018-12-25', value: 27.32 },
+                    { time: '2018-12-26', value: 25.17 },
+                    { time: '2018-12-27', value: 28.89 },
+                    { time: '2018-12-28', value: 25.46 },
+                    { time: '2018-12-29', value: 23.92 },
+                    { time: '2018-12-30', value: 22.68 },
+                    { time: '2018-12-31', value: 22.67 },
+                ]);
+
+                const candlestickSeries = chart.addCandlestickSeries({
+                    upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
+                    wickUpColor: '#26a69a', wickDownColor: '#ef5350',
+                });
+                candlestickSeries.setData([
+                    { time: '2018-12-22', open: 75.16, high: 82.84, low: 36.16, close: 45.72 },
+                    { time: '2018-12-23', open: 45.12, high: 53.90, low: 45.12, close: 48.09 },
+                    { time: '2018-12-24', open: 60.71, high: 60.71, low: 53.39, close: 59.29 },
+                    { time: '2018-12-25', open: 68.26, high: 68.26, low: 59.04, close: 60.50 },
+                    { time: '2018-12-26', open: 67.71, high: 105.85, low: 66.67, close: 91.04 },
+                    { time: '2018-12-27', open: 91.04, high: 121.40, low: 82.70, close: 111.40 },
+                    { time: '2018-12-28', open: 111.51, high: 142.83, low: 103.34, close: 131.25 },
+                    { time: '2018-12-29', open: 131.33, high: 151.17, low: 77.68, close: 96.43 },
+                    { time: '2018-12-30', open: 106.33, high: 110.20, low: 90.39, close: 98.10 },
+                    { time: '2018-12-31', open: 109.87, high: 114.69, low: 85.66, close: 111.26 },
+                ]);
+
+                chart.timeScale().fitContent();
 
             }
+        }
 
-            //     TODO: Map out state for watchlist after api call
+    }, []);
 
-        })();
 
-    }, [session]);
+    // TODO: Hook to grab Leaderboard info
+    // TODO: Hook to grab watchlist info
+    // TODO: Hook to grab Open Positions
+
+    // const addToWatchlist = () => {
+    //
+    //
+    // };
 
     return (
         <div className="flex min-h-screen w-full flex-col bg-background">
@@ -79,7 +128,7 @@ export default function Component () {
                         <h1 className="text-2xl font-bold">Dashboard</h1>
                         <div className="flex items-center gap-2">
                             <Button variant="outline" size="icon">
-                                <RefreshCwIcon className="h-4 w-4" />
+                                <RefreshCwIcon className="h-4 w-4"/>
                                 <span className="sr-only">Refresh</span>
                             </Button>
                         </div>
@@ -89,13 +138,13 @@ export default function Component () {
                             <div className="flex items-center gap-2">
                                 <h2 className="text-lg font-semibold">Stock Chart</h2>
                                 <div className="flex items-center gap-2 text-muted-foreground">
-                                    <Tally2Icon className="h-5 w-5" />
+                                    <Tally2Icon className="h-5 w-5"/>
                                     <span>RON</span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="relative flex-1">
-                                    <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
                                     <Input
                                         type="search"
                                         placeholder="Search..."
@@ -120,7 +169,8 @@ export default function Component () {
                             </div>
                         </div>
                         <div className="h-[400px] flex items-center justify-center">
-                            <FilledtimeseriesChart className="h-full w-full" />
+                            <div id={'mainChart'} className="h-full w-full"></div>
+                            {/*<FilledtimeseriesChart className="h-full w-full"/>*/}
                         </div>
                     </div>
                     <div className="border shadow-sm rounded-lg overflow-hidden">
@@ -128,7 +178,7 @@ export default function Component () {
                             <h2 className="text-lg font-semibold">Open Positions</h2>
                             <div className="flex items-center gap-2">
                                 <Button variant="outline" size="icon">
-                                    <RefreshCwIcon className="h-4 w-4" />
+                                    <RefreshCwIcon className="h-4 w-4"/>
                                     <span className="sr-only">Refresh</span>
                                 </Button>
                             </div>
@@ -195,21 +245,21 @@ export default function Component () {
                             <h2 className="text-lg font-semibold">Leaderboard</h2>
                             <div className="flex items-center gap-2">
                                 <Button
-                                    // variant={leaderboardView === "earnings" ? "primary" : "outline"}
+                                    variant={leaderboardView === "earnings" ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => setLeaderboardView("earnings")}
                                 >
                                     $
                                 </Button>
                                 <Button
-                                    // variant={leaderboardView === "percentage" ? "primary" : "outline"}
+                                    variant={leaderboardView === "percentage" ? "default" : "outline"}
                                     size="sm"
                                     onClick={() => setLeaderboardView("percentage")}
                                 >
                                     %
                                 </Button>
                                 <Button variant="outline" size="icon">
-                                    <RefreshCwIcon className="h-4 w-4" />
+                                    <RefreshCwIcon className="h-4 w-4"/>
                                     <span className="sr-only">Refresh</span>
                                 </Button>
                             </div>
@@ -270,9 +320,9 @@ export default function Component () {
                                         if (e.key === "Enter") {
 
                                             addToWatchlist("ABCD", 100, 1.5, 1.5);
-                                        
+
                                         }
-                                    
+
                                     }}
                                 />
                                 <Button size="sm" onClick={() => addToWatchlist("ABCD", 100, 1.5, 1.5)}>
@@ -287,25 +337,29 @@ export default function Component () {
                                     <TableHead>Last Price</TableHead>
                                     <TableHead>Day Change (%)</TableHead>
                                     <TableHead>Day Change ($)</TableHead>
-                                    <TableHead />
+                                    <TableHead/>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {watchlist.map((stock, index) => (
                                     <TableRow key={index}>
                                         <TableCell>{stock.ticker}</TableCell>
-                                        <TableCell className={stock.dayChangePercent >= 0 ? "text-green-500" : "text-red-500"}>
+                                        <TableCell
+                                            className={stock.dayChangePercent >= 0 ? "text-green-500" : "text-red-500"}>
                                             ${stock.lastPrice}
                                         </TableCell>
-                                        <TableCell className={stock.dayChangePercent >= 0 ? "text-green-500" : "text-red-500"}>
+                                        <TableCell
+                                            className={stock.dayChangePercent >= 0 ? "text-green-500" : "text-red-500"}>
                                             {stock.dayChangePercent}%
                                         </TableCell>
-                                        <TableCell className={stock.dayChangeAmount >= 0 ? "text-green-500" : "text-red-500"}>
+                                        <TableCell
+                                            className={stock.dayChangeAmount >= 0 ? "text-green-500" : "text-red-500"}>
                                             ${stock.dayChangeAmount}
                                         </TableCell>
                                         <TableCell>
-                                            <Button variant="ghost" size="icon" onClick={() => removeFromWatchlist(index)}>
-                                                <TrashIcon className="h-4 w-4" />
+                                            <Button variant="ghost" size="icon"
+                                                onClick={() => removeFromWatchlist(index)}>
+                                                <TrashIcon className="h-4 w-4"/>
                                                 <span className="sr-only">Remove from Watchlist</span>
                                             </Button>
                                         </TableCell>
@@ -321,7 +375,7 @@ export default function Component () {
 
 }
 
-function FilledtimeseriesChart (props) {
+function FilledtimeseriesChart(props) {
 
     return (
         <div {...props}>
@@ -412,49 +466,49 @@ function FilledtimeseriesChart (props) {
 }
 
 
-// function LinechartChart (props) {
-//
-//     return (
-//         <div {...props}>
-//             <ChartContainer
-//                 config={{
-//                     desktop: {
-//                         label: "Desktop",
-//                         color: "hsl(var(--chart-1))",
-//                     },
-//                 }}
-//             >
-//                 <LineChart
-//                     accessibilityLayer
-//                     data={[
-//                         { month: "January", desktop: 186 },
-//                         { month: "February", desktop: 305 },
-//                         { month: "March", desktop: 237 },
-//                         { month: "April", desktop: 73 },
-//                         { month: "May", desktop: 209 },
-//                         { month: "June", desktop: 214 },
-//                     ]}
-//                     margin={{
-//                         left: 12,
-//                         right: 12,
-//                     }}
-//                 >
-//                     <CartesianGrid vertical={false} />
-//                     <XAxis
-//                         dataKey="month"
-//                         tickLine={false}
-//                         axisLine={false}
-//                         tickMargin={8}
-//                         tickFormatter={(value) => value.slice(0, 3)}
-//                     />
-//                     <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-//                     <Line dataKey="desktop" type="natural" stroke="var(--color-desktop)" strokeWidth={2} dot={false} />
-//                 </LineChart>
-//             </ChartContainer>
-//         </div>
-//     );
-//
-// }
+function LinechartChart (props) {
+
+    return (
+        <div {...props}>
+            <ChartContainer
+                config={{
+                    desktop: {
+                        label: "Desktop",
+                        color: "hsl(var(--chart-1))",
+                    },
+                }}
+            >
+                <LineChart
+                    accessibilityLayer
+                    data={[
+                        { month: "January", desktop: 186 },
+                        { month: "February", desktop: 305 },
+                        { month: "March", desktop: 237 },
+                        { month: "April", desktop: 73 },
+                        { month: "May", desktop: 209 },
+                        { month: "June", desktop: 214 },
+                    ]}
+                    margin={{
+                        left: 12,
+                        right: 12,
+                    }}
+                >
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                        dataKey="month"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        tickFormatter={(value) => value.slice(0, 3)}
+                    />
+                    <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                    <Line dataKey="desktop" type="natural" stroke="var(--color-desktop)" strokeWidth={2} dot={false} />
+                </LineChart>
+            </ChartContainer>
+        </div>
+    );
+
+}
 
 
 function RefreshCwIcon (props) {
