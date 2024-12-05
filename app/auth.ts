@@ -1,4 +1,4 @@
-import NextAuth, {User} from "next-auth";
+import NextAuth from "next-auth";
 import Google from "@auth/core/providers/google";
 import Credentials from "@auth/core/providers/credentials";
 import settings from "./lib/settings";
@@ -31,6 +31,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
             let user;
 
+            console.log(credentials);
+
             if (credentials.type === 'login') {
 
                 const body = {
@@ -45,6 +47,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                     },
                     body: JSON.stringify(body)
                 }).then((res) => res.json());
+
 
                 if (user_fetch.token) {
 
@@ -114,11 +117,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             }
 
 
-            if (!user) {
-
-                throw new Error("User not found.");
-
-            }
+            // if (!user) {
+            //
+            //     throw new Error("User not found.");
+            //
+            // }
 
             return user;
 
@@ -132,6 +135,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         strategy: "jwt",
         maxAge: 90 * 24 * 60 * 60,
     },
+    trustHost: true,
     callbacks: {
         // authorized: async ({ auth }) => {
         //
