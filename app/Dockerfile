@@ -1,4 +1,8 @@
 FROM node:20 AS build
+
+LABEL version="1.0"
+LABEL description="Paper Thesis Web App"
+
 WORKDIR /app
 
 COPY package*.json ./
