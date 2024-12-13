@@ -17,3 +17,14 @@ CREATE table orders
 
 CREATE INDEX orders_user_id_index ON orders (user_id);
 CREATE INDEX orders_symbol_index ON orders (symbol);
+
+CREATE TABLE market_prices (
+    id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    symbol     VARCHAR(255) NOT NULL,
+    price      VARCHAR(255)  NOT NULL,
+    updated_at TIMESTAMP    DEFAULT now(),
+    reference_id VARCHAR(255) 
+);
+
+CREATE INDEX market_prices_symbol_index ON market_prices (symbol);
+CREATE UNIQUE INDEX market_prices_symbol_unique_idx ON market_prices (symbol);

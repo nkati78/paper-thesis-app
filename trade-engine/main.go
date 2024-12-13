@@ -3,15 +3,18 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/paper-thesis/trade-engine/db"
+	"github.com/paper-thesis/trade-engine/feed/marketdata"
+	feedData "github.com/paper-thesis/trade-engine/feed/marketdata/data"
 	"github.com/paper-thesis/trade-engine/orders"
 	"github.com/paper-thesis/trade-engine/orders/data"
 	"github.com/paper-thesis/trade-engine/users"
 	userData "github.com/paper-thesis/trade-engine/users/data"
-	"log"
-	"net/http"
-	"os"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -21,7 +24,7 @@ func run() int {
 	dsn := os.Getenv("DATABASE_URL")
 
 	if dsn == "" {
-		dsn = "postgres://postgres:@localhost:5432/test?sslmode=disable"
+		dsn = "postgres://postgres:QYs1Ecdtv1xvycyo7bGX@paper-thesis.cje8aqmy09mu.us-east-1.rds.amazonaws.com:5432/postgres"
 	}
 
 	database := db.NewDatabaseConnection(dsn)
@@ -37,6 +40,13 @@ func run() int {
 		fmt.Print(err)
 	}
 
+	marketDataService := marketdata.NewMarketDataService(feedData.NewDataProvider(database))
+	marketDataWorker := marketdata.NewWorker(marketDataService)
+
+	go func() {
+		marketDataWorker.Start()
+	}()
+
 	orderProvider := data.NewDataProvider(database)
 	userProvider := userData.NewDataProvider(database)
 
@@ -49,7 +59,7 @@ func run() int {
 		}()
 	*/
 
-	if err := StartServer(orderService, userService); err != nil {
+	if err := StartServer(orderService, userService, marketDataService); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {
 			log.Println("Server closed under request")
 			return 0
