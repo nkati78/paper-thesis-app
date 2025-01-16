@@ -1,4 +1,4 @@
-DOCKER_IMAGE=trade-engine
+DOCKER_IMAGE=paper-thesis/trade-engine
 
 # create migration timestamp
 # Usage: make migration-date
@@ -13,4 +13,4 @@ run:
 # build docker container
 # Usage: make build
 build:
-	docker build -t $(DOCKER_IMAGE) .
+	docker build --platform linux/amd64 -t $(DOCKER_IMAGE) .

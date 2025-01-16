@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -19,6 +20,7 @@ func NewDatabaseConnection(dsn string) *bun.DB {
 // const dsn = "postgres://postgres:@localhost:5432/test?sslmode=disable"
 
 // dsn := "unix://user:pass@dbname/var/run/postgresql/.s.PGSQL.5432"
+// master password RDS QYs1Ecdtv1xvycyo7bGX
 
 func connect(dsn string) *bun.DB {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))

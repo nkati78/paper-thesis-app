@@ -4,6 +4,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { KeyPair } from 'cdk-ec2-key-pair';
 import * as cdk from 'aws-cdk-lib';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import * as path from 'path';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class InfraStack extends Stack {
@@ -27,6 +29,11 @@ export class InfraStack extends Stack {
           cidrMask: 24,
         }]
     });
+
+    const rootVolume: ec2.BlockDevice = {
+      deviceName: '/dev/xvda', 
+      volume: ec2.BlockDeviceVolume.ebs(20), // Override the volume size in Gibibytes (GiB)
+    };
 
 
     const keyPairName: string = 'paper-thesis-key'
@@ -63,7 +70,7 @@ export class InfraStack extends Stack {
       instanceName: "paper-thesis-app",
       vpc,
       vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
       machineImage: ec2.MachineImage.latestAmazonLinux({
         generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
@@ -71,6 +78,14 @@ export class InfraStack extends Stack {
       keyName: key.keyPairName,
       detailedMonitoring: true,
       role: role,
+      blockDevices: [rootVolume],
+    });
+
+    // Create an asset that will be used as part of User Data to run on first load
+    const asset = new Asset(this, 'Asset', { path: path.join(__dirname, '../src/config.sh') });
+    const localPath = instance.userData.addS3DownloadCommand({
+      bucket: asset.bucket,
+      bucketKey: asset.s3ObjectKey
     });
 
     

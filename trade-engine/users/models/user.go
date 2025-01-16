@@ -20,10 +20,16 @@ type CreateUserResponse struct {
 }
 
 type LoginUserRequest struct {
-	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 type LoginResponse struct {
 	Token string `json:"token"`
+}
+
+type BalanceResponse struct {
+	Balance float64 `json:"balance"`
+	UserID  string  `json:"userId"`
+	ID      string  `json:"id"`
 }

@@ -82,3 +82,25 @@ func (uh UserHandler) Login(c *gin.Context) (HTTPStatusCode, interface{}) {
 		User:  user,
 	}
 }
+
+func (uh UserHandler) GetBalance(c *gin.Context) (HTTPStatusCode, interface{}) {
+	userID := c.GetString(security.UserCtxKey)
+
+	balance, err := uh.userService.GetUserBalance(c, userID)
+	if err != nil {
+		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
+	}
+
+	return HTTPStatusOK, balance
+}
+
+func (uh UserHandler) GetUser(c *gin.Context) (HTTPStatusCode, interface{}) {
+	userID := c.GetString(security.UserCtxKey)
+
+	user, err := uh.userService.GetUser(c, userID)
+	if err != nil {
+		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
+	}
+
+	return HTTPStatusOK, user
+}
