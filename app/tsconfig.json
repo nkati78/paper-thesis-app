@@ -5,6 +5,12 @@
       "dom.iterable",
       "esnext"
     ],
+    "baseUrl": ".",
+    "paths": {
+      "@/shadcn/*": ["app/components/shadecn_components/ui/*"],
+      "@/redux/*": ["lib/redux/features/*"],
+      "@/shadcn_svg/*": ["app/components/shadcn_svgs/*"]
+    },
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,

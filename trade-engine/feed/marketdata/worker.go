@@ -3,21 +3,24 @@ package marketdata
 import (
 	"context"
 	"fmt"
+	"github.com/paper-thesis/trade-engine/feed/fakefeed"
+	"github.com/paper-thesis/trade-engine/orders"
 	"os"
+	"strconv"
 	"time"
-
-	"github.com/paper-thesis/trade-engine/feed/robinhood"
 )
 
 // Worker is a struct that represents a worker that will be used to process the feed
 type Worker struct {
 	marketDataService MarketDataService
+	orderService      orders.OrderService
 }
 
 // NewWorker creates a new worker
-func NewWorker(marketDataService MarketDataService) *Worker {
+func NewWorker(marketDataService MarketDataService, orderService orders.OrderService) *Worker {
 	return &Worker{
 		marketDataService: marketDataService,
+		orderService:      orderService,
 	}
 }
 
@@ -29,7 +32,8 @@ func getBearerToken() string {
 
 // Start starts the worker
 func (w *Worker) Start() {
-	marketdata := robinhood.NewProvider(getBearerToken(), map[string]string{"MSFT": "50810c35-d215-4866-9758-0ada4ac79ffa"})
+	// marketdata := robinhood.NewProvider(getBearerToken(), map[string]string{"MSFT": "50810c35-d215-4866-9758-0ada4ac79ffa"})
+	marketdata := fakefeed.NewProvider(map[string]float64{"MSFT": 230.00})
 
 	for {
 		quotes, err := marketdata.RetrievePrices()
@@ -37,14 +41,26 @@ func (w *Worker) Start() {
 			panic(err)
 		}
 
-		_, err = w.marketDataService.UpsertMarketData(context.Background(), MarketData{
-			Symbol: "MSFT",
-			Price:  quotes["MSFT"].LastTradePrice,
-		})
-		if err != nil {
-			fmt.Println(err)
+		for symbol, value := range quotes {
+			_, err = w.marketDataService.UpsertMarketData(context.Background(), MarketData{
+				Symbol: symbol,
+				Price:  value.LastTradePrice,
+			})
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			newPrice, err := strconv.ParseFloat(value.LastTradePrice, 64)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			err = w.orderService.UpdatePositionsBySymbol(context.Background(), symbol, newPrice)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 
-		time.Sleep(800 * time.Millisecond)
+		time.Sleep(5 * time.Second)
 	}
 }

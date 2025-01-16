@@ -58,6 +58,11 @@ func (us UserService) CreateUser(ctx context.Context, request models.CreateUserR
 		return nil, err
 	}
 
+	_, err = us.dal.CreateBalance(ctx, userResult.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &models.CreateUserResponse{
 		ID:        userResult.ID,
 		Username:  userResult.Username,
@@ -76,6 +81,34 @@ func (us UserService) Login(ctx context.Context, request models.LoginUserRequest
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(request.Password))
 	if err != nil {
 		return nil, IncorrectEmailOrPass
+	}
+
+	return &User{
+		ID:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}, nil
+}
+
+func (us UserService) GetUserBalance(ctx context.Context, userID string) (*models.BalanceResponse, error) {
+	balance, err := us.dal.GetUserBalance(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.BalanceResponse{
+		Balance: balance.Balance,
+		UserID:  balance.UserID,
+		ID:      balance.ID,
+	}, nil
+}
+
+func (us UserService) GetUser(ctx context.Context, userID string) (*User, error) {
+	user, err := us.dal.GetUser(ctx, userID)
+	if err != nil {
+		return nil, err
 	}
 
 	return &User{

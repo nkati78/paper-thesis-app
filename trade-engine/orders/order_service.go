@@ -99,3 +99,29 @@ func (os OrderService) CancelOrder(orderID string) {
 		}
 	}
 }
+
+func (os OrderService) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice float64) error {
+	return os.dal.UpdatePositionsBySymbol(ctx, symbol, newPrice)
+}
+
+func (os OrderService) GetPositionsByUserID(ctx context.Context, userID string) ([]*Position, error) {
+	positions, err := os.dal.GetUserPositions(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	userPositions := make([]*Position, 0)
+	for _, position := range positions {
+		userPositions = append(userPositions, &Position{
+			Quantity:   position.Quantity,
+			Direction:  position.Direction,
+			ProfitLoss: position.ProfitLoss,
+			Symbol:     position.Symbol,
+			UserID:     position.UserID,
+			OrderID:    position.OrderID,
+			Status:     position.Status,
+		})
+	}
+
+	return userPositions, nil
+}
