@@ -28,3 +28,10 @@ CREATE TABLE market_prices (
 
 CREATE INDEX market_prices_symbol_index ON market_prices (symbol);
 CREATE UNIQUE INDEX market_prices_symbol_unique_idx ON market_prices (symbol);
+
+INSERT 
+    into 
+orders 
+    (id, price, quantity, side, type, symbol, user_id, status) 
+values 
+    ('00dbe482-1642-4c44-a518-f9a4d0df8a44', 10000, 10, 'buy', 'market', 'AAPL', 'f9db6ee0-957d-420e-b3a6-e52613cb63c5', 'filled');
