@@ -13,9 +13,4 @@ run:
 # build docker container
 # Usage: make build
 build:
-	docker build -t $(DOCKER_IMAGE)-dev .
-
-# build docker container for prod
-# Usage: make build-prod
-build-prod:
-	docker build --platform linux/amd64 -t $(DOCKER_IMAGE)-prod .
+	docker build --platform linux/amd64 -t $(DOCKER_IMAGE) .
