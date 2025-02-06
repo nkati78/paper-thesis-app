@@ -27,3 +27,10 @@ CREATE TABLE balances
 );
 
 CREATE INDEX balances_user_id_index ON balances (user_id);
+
+INSERT into balances (user_id, balance) values ('f9db6ee0-957d-420e-b3a6-e52613cb63c5', '1000000');
+
+insert into positions 
+    (user_id, symbol, quantity, direction, average_price, profit_loss, status, order_id) 
+values 
+    ('f9db6ee0-957d-420e-b3a6-e52613cb63c5', 'AAPL', 10, 'B', 100.00, 12.00, 'open', '00dbe482-1642-4c44-a518-f9a4d0df8a44');

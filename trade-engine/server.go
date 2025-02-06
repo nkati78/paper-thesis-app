@@ -37,6 +37,9 @@ func StartServer(orderService orders.OrderService, userService users.UserService
 	ordersRouter.POST("", orderHandler.HandleCreateOrder)
 	ordersRouter.GET("", orderHandler.HandleGetOrders)
 
+	positionsRouter := router.Group("/positions", auth.TokenMiddleware())
+	positionsRouter.GET("", orderHandler.HandleGetUserPositions)
+
 	marketDataRouter := router.Group("/market-data", auth.TokenMiddleware())
 	marketDataRouter.GET("/:symbol", handlers.ToHandler(marketDataHandler.HandleGetMarketData))
 

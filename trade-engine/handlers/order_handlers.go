@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/paper-thesis/trade-engine/orders"
 	"github.com/paper-thesis/trade-engine/security"
-	"net/http"
 )
 
 type OrderHandler struct {
@@ -65,4 +66,15 @@ func (oh OrderHandler) HandleGetOrders(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, order)
+}
+
+func (oh OrderHandler) HandleGetUserPositions(c *gin.Context) {
+	userID := c.GetString(security.UserCtxKey)
+	positions, err := oh.orderService.GetPositionsByUserID(c, userID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, positions)
 }
