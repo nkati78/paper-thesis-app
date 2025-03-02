@@ -19,7 +19,7 @@ func NewMarketDataService(dal data.DataProvider) MarketDataService {
 type MarketData struct {
 	ID        string `json:"id"`
 	Symbol    string `json:"symbol"`
-	Price     int64  `json:"price"`
+	Price     uint64 `json:"price"`
 	UpdatedAt string `json:"updated_at"`
 }
 

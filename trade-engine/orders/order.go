@@ -33,7 +33,7 @@ const (
 
 type Order struct {
 	OrderID        string
-	Price          int64
+	Price          uint64
 	Quantity       uint32
 	QuantityFilled uint32
 	Filled         bool
@@ -54,7 +54,7 @@ type Fill struct {
 	FillTime     time.Time
 }
 
-func NewOrder(price int64, quantity uint32, userID string, symbol string, side TradeSide, orderType OrderType) *Order {
+func NewOrder(price uint64, quantity uint32, userID string, symbol string, side TradeSide, orderType OrderType) *Order {
 	return &Order{
 		OrderID:   uuid.New().String(),
 		Price:     price,
@@ -105,7 +105,7 @@ func OrderBookRemove(orders []*Order, orderID string) []*Order {
 	return orders
 }
 
-func GetOrderByPrice(orders []*Order, price int64) *Order {
+func GetOrderByPrice(orders []*Order, price uint64) *Order {
 	for _, o := range orders {
 		if o.Price == price {
 			return o

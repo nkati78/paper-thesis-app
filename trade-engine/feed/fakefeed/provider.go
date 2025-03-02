@@ -29,7 +29,7 @@ func (p *Provider) RetrievePrices() (map[string]Quote, error) {
 		p.tickers[symbol] = lastPrice
 
 		quotes[symbol] = Quote{
-			LastTradePrice: lastPrice,
+			LastTradePrice: uint64(lastPrice),
 		}
 	}
 

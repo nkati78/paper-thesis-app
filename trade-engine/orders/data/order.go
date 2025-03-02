@@ -11,7 +11,7 @@ type Order struct {
 	bun.BaseModel `bun:"table:orders,alias:o"`
 
 	ID       string `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
-	Price    int64  `bun:"price"`
+	Price    uint64 `bun:"price"`
 	Quantity uint32 `bun:"quantity"`
 	Side     string `bun:"side"`
 	Type     string `bun:"type"`

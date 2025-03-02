@@ -12,7 +12,7 @@ type MarketPrice struct {
 
 	ID        string    `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
 	Symbol    string    `bun:"symbol"`
-	Price     int64     `bun:"price"`
+	Price     uint64    `bun:"price"`
 	UpdatedAt time.Time `bun:"updated_at"`
 
 	ReferenceID string `bun:"reference_id"`

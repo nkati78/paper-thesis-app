@@ -10,7 +10,7 @@ import (
 )
 
 type OrderRequest struct {
-	Price    int64  `json:"price"`
+	Price    uint64 `json:"price"`
 	Quantity uint32 `json:"quantity"`
 	Side     string `json:"side"`
 	Type     string `json:"type"`
@@ -104,7 +104,7 @@ func (os OrderService) CancelOrder(orderID string) {
 	}
 }
 
-func (os OrderService) FillOrder(ctx context.Context, order *Order, price int64) error {
+func (os OrderService) FillOrder(ctx context.Context, order *Order, price uint64) error {
 	order.Filled = true
 	order.FilledTime = time.Now().UTC()
 	order.Status = Filled
@@ -139,7 +139,7 @@ func (os OrderService) FillOrder(ctx context.Context, order *Order, price int64)
 	return nil
 }
 
-func (os OrderService) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice int64) error {
+func (os OrderService) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice uint64) error {
 	return os.dal.UpdatePositionsBySymbol(ctx, symbol, newPrice)
 }
 
