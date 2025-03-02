@@ -1,5 +1,5 @@
 package fakefeed
 
 type Quote struct {
-	LastTradePrice string `json:"last_trade_price"`
+	LastTradePrice int64 `json:"last_trade_price"`
 }

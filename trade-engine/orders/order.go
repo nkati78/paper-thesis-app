@@ -1,8 +1,9 @@
 package orders
 
 import (
-	"github.com/paper-thesis/trade-engine/orders/data"
 	"time"
+
+	"github.com/paper-thesis/trade-engine/orders/data"
 
 	"github.com/google/uuid"
 )
@@ -116,6 +117,7 @@ func GetOrderByPrice(orders []*Order, price int64) *Order {
 
 func (o Order) ToDB() data.Order {
 	return data.Order{
+		ID:       o.OrderID,
 		Price:    o.Price,
 		Quantity: o.Quantity,
 		Side:     string(o.Side),

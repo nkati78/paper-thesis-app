@@ -3,11 +3,11 @@ package marketdata
 import (
 	"context"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/paper-thesis/trade-engine/feed/fakefeed"
 	"github.com/paper-thesis/trade-engine/orders"
-	"os"
-	"strconv"
-	"time"
 )
 
 // Worker is a struct that represents a worker that will be used to process the feed
@@ -33,7 +33,7 @@ func getBearerToken() string {
 // Start starts the worker
 func (w *Worker) Start() {
 	// marketdata := robinhood.NewProvider(getBearerToken(), map[string]string{"MSFT": "50810c35-d215-4866-9758-0ada4ac79ffa"})
-	marketdata := fakefeed.NewProvider(map[string]float64{"MSFT": 230.00})
+	marketdata := fakefeed.NewProvider(map[string]int64{"MSFT": 23000})
 
 	for {
 		quotes, err := marketdata.RetrievePrices()
@@ -50,9 +50,14 @@ func (w *Worker) Start() {
 				fmt.Println(err)
 			}
 
-			newPrice, err := strconv.ParseFloat(value.LastTradePrice, 64)
-			if err != nil {
-				fmt.Println(err)
+			newPrice := value.LastTradePrice
+
+			orderBook := w.orderService.GetOrderBook(symbol)
+			for _, order := range orderBook {
+				fmt.Println("Checking order: ", order)
+				if order.Type == orders.Market && order.Status == orders.Open {
+					w.orderService.FillOrder(context.Background(), order, newPrice)
+				}
 			}
 
 			err = w.orderService.UpdatePositionsBySymbol(context.Background(), symbol, newPrice)

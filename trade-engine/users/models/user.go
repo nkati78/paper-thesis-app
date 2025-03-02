@@ -33,3 +33,7 @@ type BalanceResponse struct {
 	UserID  string  `json:"userId"`
 	ID      string  `json:"id"`
 }
+
+type WatchListInput struct {
+	Symbol string `json:"symbol"`
+}

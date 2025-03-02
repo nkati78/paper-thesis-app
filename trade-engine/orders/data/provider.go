@@ -14,5 +14,5 @@ type OrderProvider interface {
 	CreatePosition(ctx context.Context, position Position) (*Position, error)
 	UpdatePosition(ctx context.Context, position Position) (*Position, error)
 	UpdatePositionByOrderID(ctx context.Context, position Position) (*Position, error)
-	UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice float64) error
+	UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice int64) error
 }
