@@ -19,8 +19,13 @@ func NewMarketDataService(dal data.DataProvider) MarketDataService {
 type MarketData struct {
 	ID        string `json:"id"`
 	Symbol    string `json:"symbol"`
-	Price     string `json:"price"`
+	Price     int64  `json:"price"`
 	UpdatedAt string `json:"updated_at"`
+}
+
+type SymbolData struct {
+	Symbol   string `json:"symbol"`
+	Exchange string `json:"exchange"`
 }
 
 func (m MarketDataService) GetMarketData(ctx context.Context, symbol string) (*MarketData, error) {
@@ -52,4 +57,22 @@ func (m MarketDataService) UpsertMarketData(ctx context.Context, marketData Mark
 	}
 
 	return &marketData, nil
+}
+
+func (m MarketDataService) GetSymbols(ctx context.Context) ([]SymbolData, error) {
+	// Get symbols
+	symbols, err := m.dal.GetSymbols(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var symbolsList []SymbolData
+	for _, symbol := range symbols {
+		symbolsList = append(symbolsList, SymbolData{
+			Symbol:   symbol.Symbol,
+			Exchange: symbol.Exchange,
+		})
+	}
+
+	return symbolsList, nil
 }

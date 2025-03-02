@@ -104,3 +104,31 @@ func (uh UserHandler) GetUser(c *gin.Context) (HTTPStatusCode, interface{}) {
 
 	return HTTPStatusOK, user
 }
+
+func (uh UserHandler) GetUserWatchList(c *gin.Context) (HTTPStatusCode, interface{}) {
+	userID := c.GetString(security.UserCtxKey)
+
+	watchList, err := uh.userService.GetUserWatchList(c, userID)
+	if err != nil {
+		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
+	}
+
+	return HTTPStatusOK, watchList
+}
+
+func (uh UserHandler) AddSymbolWatchList(c *gin.Context) (HTTPStatusCode, interface{}) {
+	userID := c.GetString(security.UserCtxKey)
+	var watchListInput models.WatchListInput
+
+	err := c.BindJSON(&watchListInput)
+	if err != nil {
+		return HTTPStatusBadRequest, HTTPError{Message: "Invalid request"}
+	}
+
+	watchtListResponse, err := uh.userService.CreateWatchlistSymbol(c, userID, watchListInput.Symbol)
+	if err != nil {
+		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
+	}
+
+	return HTTPStatusOK, watchtListResponse
+}

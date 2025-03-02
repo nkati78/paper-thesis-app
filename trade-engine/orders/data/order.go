@@ -2,8 +2,9 @@ package data
 
 import (
 	"context"
-	"github.com/uptrace/bun"
 	"time"
+
+	"github.com/uptrace/bun"
 )
 
 type Order struct {

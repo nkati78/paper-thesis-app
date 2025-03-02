@@ -3,6 +3,9 @@ package orders
 import (
 	"context"
 	"errors"
+	"fmt"
+	"time"
+
 	"github.com/paper-thesis/trade-engine/orders/data"
 )
 
@@ -42,23 +45,23 @@ func (os OrderService) CreateOrder(ctx context.Context, userID string, orderRequ
 		OrderType(orderRequest.Type),
 	)
 
-	if order.Type == Market {
-		// Fill the order immediately
-		order.Fill(order.Quantity)
-		order.Status = Filled
-	} else {
-		// Insert the order into the order book
-		orders := OrderBookInsert(orderBooks[order.Symbol], order)
-		orderBooks[order.Symbol] = orders
-		order.Status = Open
-	}
+	// Insert the order into the order book
+	orders := OrderBookInsert(orderBooks[order.Symbol], order)
+	orderBooks[order.Symbol] = orders
+	order.Status = Open
 
-	orderDB, err := os.dal.CreateOrder(ctx, order.ToDB())
+	fmt.Println("Order book updated: ", orderBooks)
+
+	orderDB := order.ToDB()
+	orderDB.CreatedAt = time.Now().UTC()
+	orderDB.UpdatedAt = time.Now().UTC()
+
+	createdOrder, err := os.dal.CreateOrder(ctx, order.ToDB())
 	if err != nil {
 		return nil, err
 	}
 
-	return &OrderResponse{OrderID: orderDB.ID}, nil
+	return &OrderResponse{OrderID: createdOrder.ID}, nil
 }
 
 func (os OrderService) GetOrderBook(symbol string) OrderBook {
@@ -80,6 +83,7 @@ func (os OrderService) GetOrderByUserID(ctx context.Context, userID string) ([]*
 			UserID:    order.UserID,
 			Symbol:    order.Symbol,
 			Timestamp: order.CreatedAt,
+			Status:    OrderStatus(order.Status),
 			Side:      TradeSide(order.Side),
 			Type:      OrderType(order.Type),
 		})
@@ -100,7 +104,42 @@ func (os OrderService) CancelOrder(orderID string) {
 	}
 }
 
-func (os OrderService) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice float64) error {
+func (os OrderService) FillOrder(ctx context.Context, order *Order, price int64) error {
+	order.Filled = true
+	order.FilledTime = time.Now().UTC()
+	order.Status = Filled
+
+	order.Price = price
+
+	_, err := os.dal.UpdateOrder(ctx, order.ToDB())
+	if err != nil {
+		return err
+	}
+
+	position := data.Position{
+		Quantity:   order.Quantity,
+		Direction:  string(order.Side),
+		ProfitLoss: 0,
+		Symbol:     order.Symbol,
+		UserID:     order.UserID,
+		OrderID:    order.OrderID,
+		Status:     string(Open),
+		AvgPrice:   price,
+		CreatedAt:  time.Now().UTC(),
+		UpdatedAt:  time.Now().UTC(),
+	}
+
+	_, err = os.dal.CreatePosition(ctx, position)
+	if err != nil {
+		return err
+	}
+
+	OrderBookRemove(orderBooks[order.Symbol], order.OrderID)
+
+	return nil
+}
+
+func (os OrderService) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice int64) error {
 	return os.dal.UpdatePositionsBySymbol(ctx, symbol, newPrice)
 }
 
@@ -113,13 +152,17 @@ func (os OrderService) GetPositionsByUserID(ctx context.Context, userID string) 
 	userPositions := make([]*Position, 0)
 	for _, position := range positions {
 		userPositions = append(userPositions, &Position{
+			ID:         position.ID,
 			Quantity:   position.Quantity,
 			Direction:  position.Direction,
+			AvgPrice:   position.AvgPrice,
 			ProfitLoss: position.ProfitLoss,
 			Symbol:     position.Symbol,
 			UserID:     position.UserID,
 			OrderID:    position.OrderID,
 			Status:     position.Status,
+			CreatedAt:  position.CreatedAt,
+			UpdatedAt:  position.UpdatedAt,
 		})
 	}
 

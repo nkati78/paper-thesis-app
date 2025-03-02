@@ -32,3 +32,13 @@ func (mh MarketDataHandler) HandleGetMarketData(c *gin.Context) (HTTPStatusCode,
 
 	return HTTPStatusOK, marketPrice
 }
+
+func (mh MarketDataHandler) HandleGetSymbols(c *gin.Context) (HTTPStatusCode, interface{}) {
+	symbols, err := mh.marketDataService.GetSymbols(c)
+	if err != nil {
+		fmt.Println(err)
+		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
+	}
+
+	return HTTPStatusOK, symbols
+}
