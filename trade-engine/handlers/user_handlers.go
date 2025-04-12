@@ -132,3 +132,20 @@ func (uh UserHandler) AddSymbolWatchList(c *gin.Context) (HTTPStatusCode, interf
 
 	return HTTPStatusOK, watchtListResponse
 }
+
+func (uh UserHandler) RemoveSymbolWatchList(c *gin.Context) (HTTPStatusCode, interface{}) {
+	userID := c.GetString(security.UserCtxKey)
+	var watchListInput models.WatchListInput
+
+	err := c.BindJSON(&watchListInput)
+	if err != nil {
+		return HTTPStatusBadRequest, HTTPError{Message: "Invalid request, missing symbol"}
+	}
+
+	err = uh.userService.RemoveWatchlistSymbol(c, userID, watchListInput.Symbol)
+	if err != nil {
+		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
+	}
+
+	return HTTPStatusOK, nil
+}

@@ -164,3 +164,18 @@ func (us UserService) GetUserWatchList(ctx context.Context, userID string) ([]Wa
 
 	return watchList, nil
 }
+
+func (us UserService) DeleteWatchlistSymbol(ctx context.Context, symbol, userID string) error {
+	wl, err := us.dal.GetUserWatchList(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	for _, w := range wl {
+		if w.Symbol == symbol {
+			return us.dal.DeleteWatchList(ctx, w.ID)
+		}
+	}
+
+	return nil
+}

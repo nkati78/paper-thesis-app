@@ -51,6 +51,7 @@ func StartServer(orderService orders.OrderService, userService users.UserService
 	userRouter.GET("/balance", handlers.ToHandler(userHandler.GetBalance))
 	userRouter.GET("/watchlist", handlers.ToHandler(userHandler.GetUserWatchList))
 	userRouter.POST("/watchlist", handlers.ToHandler(userHandler.AddSymbolWatchList))
+	userRouter.DELETE("/watchlist", handlers.ToHandler(userHandler.RemoveSymbolWatchList))
 
 	router.POST("/register", handlers.ToHandler(userHandler.CreateUser))
 	router.POST("/login", handlers.ToHandler(userHandler.Login))
