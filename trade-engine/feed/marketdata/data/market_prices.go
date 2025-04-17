@@ -10,10 +10,11 @@ import (
 type MarketPrice struct {
 	bun.BaseModel `bun:"table:market_prices,alias:mp"`
 
-	ID        string    `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
-	Symbol    string    `bun:"symbol"`
-	Price     uint64    `bun:"price"`
-	UpdatedAt time.Time `bun:"updated_at"`
+	ID            string    `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
+	Symbol        string    `bun:"symbol"`
+	Price         uint64    `bun:"price"`
+	StartingPrice uint64    `bun:"starting_price"`
+	UpdatedAt     time.Time `bun:"updated_at"`
 
 	ReferenceID string `bun:"reference_id"`
 }

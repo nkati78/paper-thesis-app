@@ -142,7 +142,7 @@ func (uh UserHandler) RemoveSymbolWatchList(c *gin.Context) (HTTPStatusCode, int
 		return HTTPStatusBadRequest, HTTPError{Message: "Invalid request, missing symbol"}
 	}
 
-	err = uh.userService.RemoveWatchlistSymbol(c, userID, watchListInput.Symbol)
+	err = uh.userService.DeleteWatchlistSymbol(c, userID, watchListInput.Symbol)
 	if err != nil {
 		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
 	}

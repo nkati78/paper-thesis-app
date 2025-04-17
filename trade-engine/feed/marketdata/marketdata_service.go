@@ -17,10 +17,13 @@ func NewMarketDataService(dal data.DataProvider) MarketDataService {
 }
 
 type MarketData struct {
-	ID        string `json:"id"`
-	Symbol    string `json:"symbol"`
-	Price     uint64 `json:"price"`
-	UpdatedAt string `json:"updated_at"`
+	ID               string `json:"id"`
+	Symbol           string `json:"symbol"`
+	Price            uint64 `json:"price"`
+	StartingPrice    uint64 `json:"startingPrice"`
+	PriceChange      uint64 `json:"priceChange"`
+	PercentageChange uint64 `json:"percentageChange"`
+	UpdatedAt        string `json:"updated_at"`
 }
 
 type SymbolData struct {
@@ -35,11 +38,18 @@ func (m MarketDataService) GetMarketData(ctx context.Context, symbol string) (*M
 		return nil, err
 	}
 
+	// calculate the price change
+	priceChange := data.Price - data.StartingPrice
+	percentageChange := (priceChange * 100) / data.StartingPrice
+
 	return &MarketData{
-		ID:        data.ID,
-		Symbol:    data.Symbol,
-		Price:     data.Price,
-		UpdatedAt: data.UpdatedAt.String(),
+		ID:               data.ID,
+		Symbol:           data.Symbol,
+		Price:            data.Price,
+		StartingPrice:    data.StartingPrice,
+		PriceChange:      priceChange,
+		PercentageChange: percentageChange,
+		UpdatedAt:        data.UpdatedAt.String(),
 	}, nil
 }
 
