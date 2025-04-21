@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/paper-thesis/trade-engine/security"
 	"github.com/paper-thesis/trade-engine/users"
@@ -125,10 +126,12 @@ func (uh UserHandler) AddSymbolWatchList(c *gin.Context) (HTTPStatusCode, interf
 		return HTTPStatusBadRequest, HTTPError{Message: "Invalid request"}
 	}
 
-	watchtListResponse, err := uh.userService.CreateWatchlistSymbol(c, userID, watchListInput.Symbol)
+	watchtListResponse, err := uh.userService.CreateWatchlistSymbol(c, watchListInput.Symbol, userID)
 	if err != nil {
 		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
 	}
+
+	fmt.Println(watchtListResponse)
 
 	return HTTPStatusOK, watchtListResponse
 }
@@ -142,7 +145,7 @@ func (uh UserHandler) RemoveSymbolWatchList(c *gin.Context) (HTTPStatusCode, int
 		return HTTPStatusBadRequest, HTTPError{Message: "Invalid request, missing symbol"}
 	}
 
-	err = uh.userService.DeleteWatchlistSymbol(c, userID, watchListInput.Symbol)
+	err = uh.userService.DeleteWatchlistSymbol(c, watchListInput.Symbol, userID)
 	if err != nil {
 		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
 	}

@@ -2,6 +2,7 @@ package marketdata
 
 import (
 	"context"
+	"time"
 
 	"github.com/paper-thesis/trade-engine/feed/marketdata/data"
 )
@@ -40,7 +41,14 @@ func (m MarketDataService) GetMarketData(ctx context.Context, symbol string) (*M
 
 	// calculate the price change
 	priceChange := data.Price - data.StartingPrice
-	percentageChange := (priceChange * 100) / data.StartingPrice
+
+	var percentageChange uint64
+
+	if data.StartingPrice == 0 {
+		percentageChange = 100.0
+	} else {
+		percentageChange = (priceChange * 100) / data.StartingPrice
+	}
 
 	return &MarketData{
 		ID:               data.ID,
@@ -54,12 +62,16 @@ func (m MarketDataService) GetMarketData(ctx context.Context, symbol string) (*M
 }
 
 func (m MarketDataService) UpsertMarketData(ctx context.Context, marketData MarketData) (*MarketData, error) {
+
 	// Upsert market data
 	data := data.MarketPrice{
-		ID:     marketData.ID,
-		Symbol: marketData.Symbol,
-		Price:  marketData.Price,
+		ID:        marketData.ID,
+		Symbol:    marketData.Symbol,
+		Price:     marketData.Price,
+		UpdatedAt: time.Now(),
 	}
+
+	//fmt.Println(data)
 
 	_, err := m.dal.UpsertMarketPrice(ctx, data)
 	if err != nil {

@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine as build
+FROM --platform=linux/amd64 golang:1.22-alpine AS build
 RUN apk --no-cache --update add build-base
 ADD . /app/
 WORKDIR /app

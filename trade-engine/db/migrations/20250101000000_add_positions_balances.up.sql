@@ -48,6 +48,9 @@ CREATE INDEX symbols_symbol_index ON symbols (symbol);
 INSERT into symbols (symbol, exchange) values ('AAPL', 'NASDAQ');
 INSERT into symbols (symbol, exchange) values ('GOOGL', 'NASDAQ');
 INSERT into symbols (symbol, exchange) values ('MSFT', 'NASDAQ');
+INSERT into symbols (symbol, exchange) values ('NFLX', 'NASDAQ');
+INSERT into symbols (symbol, exchange) values ('NVDA', 'NASDAQ');
+INSERT into symbols (symbol, exchange) values ('IBM', 'NASDAQ');
 
 CREATE TABLE watchlist (
     id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
