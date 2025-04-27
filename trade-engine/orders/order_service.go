@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/paper-thesis/trade-engine/orders/data"
+	userData "github.com/paper-thesis/trade-engine/users"
+	balanceData "github.com/paper-thesis/trade-engine/users/data"
 )
 
 type OrderRequest struct {
@@ -29,6 +31,8 @@ func NewOrderService(dal data.OrderProvider) OrderService {
 
 type OrderService struct {
 	dal data.OrderProvider
+	bd  balanceData.DataProvider
+	ud  userData.UserService
 }
 
 func (os OrderService) CreateOrder(ctx context.Context, userID string, orderRequest OrderRequest) (*OrderResponse, error) {
@@ -53,13 +57,24 @@ func (os OrderService) CreateOrder(ctx context.Context, userID string, orderRequ
 	fmt.Println("Order book updated: ", orderBooks)
 
 	orderDB := order.ToDB()
-	orderDB.CreatedAt = time.Now().UTC()
-	orderDB.UpdatedAt = time.Now().UTC()
+	orderDB.CreatedAt = time.Now()
+	orderDB.UpdatedAt = time.Now()
 
 	createdOrder, err := os.dal.CreateOrder(ctx, order.ToDB())
 	if err != nil {
 		return nil, err
 	}
+
+	//Josh, this is what I added to auto fill the order after 10 seconds
+	time.AfterFunc(10*time.Second, func() {
+
+		fillOrderErr := os.FillOrder(ctx, order, orderRequest.Price)
+
+		if fillOrderErr != nil {
+
+			fmt.Printf("Unable to fill order: %v", fillOrderErr)
+		}
+	})
 
 	return &OrderResponse{OrderID: createdOrder.ID}, nil
 }
@@ -106,7 +121,7 @@ func (os OrderService) CancelOrder(orderID string) {
 
 func (os OrderService) FillOrder(ctx context.Context, order *Order, price uint64) error {
 	order.Filled = true
-	order.FilledTime = time.Now().UTC()
+	order.FilledTime = time.Now()
 	order.Status = Filled
 
 	order.Price = price
@@ -125,8 +140,8 @@ func (os OrderService) FillOrder(ctx context.Context, order *Order, price uint64
 		OrderID:    order.OrderID,
 		Status:     string(Open),
 		AvgPrice:   price,
-		CreatedAt:  time.Now().UTC(),
-		UpdatedAt:  time.Now().UTC(),
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 
 	_, err = os.dal.CreatePosition(ctx, position)
@@ -135,6 +150,23 @@ func (os OrderService) FillOrder(ctx context.Context, order *Order, price uint64
 	}
 
 	OrderBookRemove(orderBooks[order.Symbol], order.OrderID)
+
+	//TODO: Where I am currently working Josh
+	//balance, err := os.ud.GetUserBalance(ctx, order.UserID)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//fmt.Println(balance)
+	//fmt.Println("ron")
+	//
+	//totalCost := float64(order.Quantity) * float64(price)
+	//balance.Balance -= totalCost
+	//
+	//_, err = os.bd.UpdateUserBalance(ctx, order.UserID, *balance)
+	//if err != nil {
+	//	return err
+	//}
 
 	return nil
 }
