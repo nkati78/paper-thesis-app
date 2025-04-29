@@ -23,6 +23,13 @@ CREATE TABLE market_prices (
     symbol          VARCHAR(255) NOT NULL,
     price           INT NOT NULL,
     starting_price  INT NOT NULL,
+    today_high     INT NOT NULL,
+    today_low      INT NOT NULL,
+    today_open    INT NOT NULL,
+    yesterday_close INT NOT NULL,
+    yesterday_high INT NOT NULL,
+    yesterday_low  INT NOT NULL,
+    trade_date   VARCHAR NOT NULL,
     updated_at      TIMESTAMP    DEFAULT now(),
     reference_id    VARCHAR(255)
 );

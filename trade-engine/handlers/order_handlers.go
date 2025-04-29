@@ -14,7 +14,12 @@ type OrderHandler struct {
 }
 
 type OrderResponse struct {
-	OrderID string `json:"orderId"`
+	OrderID   string `json:"orderId"`
+	Price     uint64 `json:"price"`
+	Quantity  uint32 `json:"quantity"`
+	Side      string `json:"side"`
+	Type      string `json:"type"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func NewOrderHandler(orderService orders.OrderService) *OrderHandler {

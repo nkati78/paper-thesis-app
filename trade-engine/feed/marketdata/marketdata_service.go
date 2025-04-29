@@ -22,14 +22,26 @@ type MarketData struct {
 	Symbol           string `json:"symbol"`
 	Price            uint64 `json:"price"`
 	StartingPrice    uint64 `json:"startingPrice"`
+	YesterdayClose   uint64 `json:"yesterdayClose"`
+	YesterdayOpen    uint64 `json:"yesterdayOpen"`
+	YesterdayHigh    uint64 `json:"yesterdayHigh"`
+	YesterdayLow     uint64 `json:"yesterdayLow"`
+	TodayOpen        uint64 `json:"todayOpen"`
+	TodayHigh        uint64 `json:"todayHigh"`
+	TodayLow         uint64 `json:"todayLow"`
+	TradeDate        string `json:"tradeDate"`
 	PriceChange      uint64 `json:"priceChange"`
 	PercentageChange uint64 `json:"percentageChange"`
 	UpdatedAt        string `json:"updated_at"`
 }
 
 type SymbolData struct {
-	Symbol   string `json:"symbol"`
-	Exchange string `json:"exchange"`
+	Symbol           string `json:"symbol"`
+	Exchange         string `json:"exchange"`
+	LastTradePrice   uint64 `json:"lastTradePrice"`
+	PreviousDayClose uint64 `json:"previousDayClose"`
+	TradeDate        string `json:"tradeDate"`
+	OpenPrice        uint64 `json:"openPrice"`
 }
 
 func (m MarketDataService) GetMarketData(ctx context.Context, symbol string) (*MarketData, error) {
@@ -65,10 +77,17 @@ func (m MarketDataService) UpsertMarketData(ctx context.Context, marketData Mark
 
 	// Upsert market data
 	data := data.MarketPrice{
-		ID:        marketData.ID,
-		Symbol:    marketData.Symbol,
-		Price:     marketData.Price,
-		UpdatedAt: time.Now(),
+		ID:             marketData.ID,
+		Symbol:         marketData.Symbol,
+		Price:          marketData.Price,
+		TradeDate:      marketData.TradeDate,
+		TodayHigh:      marketData.TodayHigh,
+		TodayLow:       marketData.TodayLow,
+		StartingPrice:  marketData.StartingPrice,
+		YesterdayClose: marketData.YesterdayClose,
+		YesterdayOpen:  marketData.YesterdayOpen,
+		YesterdayHigh:  marketData.YesterdayHigh,
+		UpdatedAt:      time.Now(),
 	}
 
 	//fmt.Println(data)
@@ -97,4 +116,34 @@ func (m MarketDataService) GetSymbols(ctx context.Context) ([]SymbolData, error)
 	}
 
 	return symbolsList, nil
+}
+
+func (m MarketDataService) GetSymbol(ctx context.Context, symbol string) (*SymbolData, error) {
+	// Get symbols
+	symbols, err := m.dal.GetSymbol(ctx, symbol)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SymbolData{
+		Symbol:   symbols.Symbol,
+		Exchange: symbols.Exchange,
+	}, nil
+}
+
+func (m MarketDataService) UpsertSymbol(ctx context.Context, symbol SymbolData) (*SymbolData, error) {
+	// Upsert symbol
+	data := data.Symbols{
+		Symbol:         symbol.Symbol,
+		Exchange:       symbol.Exchange,
+		LastTradePrice: symbol.LastTradePrice,
+		OpenPrice:      symbol.OpenPrice,
+	}
+
+	_, err := m.dal.UpsertSymbol(ctx, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &symbol, nil
 }

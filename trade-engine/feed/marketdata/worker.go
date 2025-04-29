@@ -34,7 +34,6 @@ func getBearerToken() string {
 func (w *Worker) Start() {
 	// marketdata := robinhood.NewProvider(getBearerToken(), map[string]string{"MSFT": "50810c35-d215-4866-9758-0ada4ac79ffa"})
 	marketdata := fakefeed.NewProvider(map[string]int64{"MSFT": 23000, "AAPL": 23000, "GOOGL": 23000, "AMZN": 23000, "TSLA": 23000, "FB": 23000, "NVDA": 23000, "NFLX": 23000, "AMD": 23000, "INTC": 23000, "CSCO": 23000, "IBM": 23000, "ORCL": 23000, "QCOM": 23000, "TXN": 23000, "AVGO": 23000, "ADBE": 23000, "CRM": 23000})
-	startOfDay := true
 
 	for {
 		quotes, err := marketdata.RetrievePrices()
@@ -43,22 +42,40 @@ func (w *Worker) Start() {
 		}
 
 		for symbol, value := range quotes {
-			if startOfDay {
-				_, err := w.marketDataService.UpsertMarketData(context.Background(), MarketData{
-					Symbol:        symbol,
-					Price:         value.LastTradePrice,
-					StartingPrice: value.LastTradePrice,
-				})
-				if err != nil {
-					fmt.Println(err)
-				}
-				startOfDay = false
-			}
-
-			_, err = w.marketDataService.UpsertMarketData(context.Background(), MarketData{
+			newMarketData := MarketData{
 				Symbol: symbol,
 				Price:  value.LastTradePrice,
-			})
+			}
+			// get market data from the database
+			marketData, err := w.marketDataService.GetMarketData(context.Background(), symbol)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			// check if new trading day
+			if marketData.TradeDate != time.Now().Format("2006-01-02") {
+				newMarketData.TradeDate = time.Now().Format("2006-01-02")
+				newMarketData.StartingPrice = value.LastTradePrice
+				newMarketData.TodayHigh = value.LastTradePrice
+				newMarketData.TodayLow = value.LastTradePrice
+				newMarketData.YesterdayClose = newMarketData.Price
+				newMarketData.YesterdayHigh = newMarketData.TodayHigh
+				newMarketData.YesterdayLow = newMarketData.TodayLow
+			}
+
+			// check if we are todays high or low
+			if marketData.Price < value.LastTradePrice {
+				newMarketData.TodayHigh = value.LastTradePrice
+			} else if marketData.Price > value.LastTradePrice {
+				newMarketData.TodayLow = value.LastTradePrice
+			}
+
+			// check if we are the starting price
+			if marketData.StartingPrice == 0 {
+				newMarketData.StartingPrice = value.LastTradePrice
+			}
+
+			_, err = w.marketDataService.UpsertMarketData(context.Background(), newMarketData)
 			if err != nil {
 				fmt.Println(err)
 			}

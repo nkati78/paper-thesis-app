@@ -2,15 +2,18 @@ package handlers
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
+	"github.com/paper-thesis/trade-engine/orders"
 	"github.com/paper-thesis/trade-engine/security"
 	"github.com/paper-thesis/trade-engine/users"
 	"github.com/paper-thesis/trade-engine/users/models"
 )
 
 type UserHandler struct {
-	userService users.UserService
-	auth        security.Auth
+	userService  users.UserService
+	orderService orders.OrderService
+	auth         security.Auth
 }
 
 func NewUserHandler(userService users.UserService, auth security.Auth) *UserHandler {
@@ -91,6 +94,23 @@ func (uh UserHandler) GetBalance(c *gin.Context) (HTTPStatusCode, interface{}) {
 	if err != nil {
 		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
 	}
+
+	// get open positions for the user and calculate the total value
+	positions, err := uh.orderService.GetPositionsByUserID(c, userID)
+	if err != nil {
+		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
+	}
+
+	totalValue := 0.0
+	for _, position := range positions {
+		if position.Status != string(orders.Open) {
+			continue
+		}
+
+		totalValue += float64(position.ProfitLoss)
+	}
+
+	balance.Balance += totalValue
 
 	return HTTPStatusOK, balance
 }

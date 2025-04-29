@@ -40,6 +40,10 @@ func (os OrderService) CreateOrder(ctx context.Context, userID string, orderRequ
 		return nil, errors.New("user is not authenticated")
 	}
 
+	if orderRequest.Type == "" {
+		return nil, errors.New("order type is required")
+	}
+
 	order := NewOrder(
 		orderRequest.Price,
 		orderRequest.Quantity,
@@ -64,17 +68,6 @@ func (os OrderService) CreateOrder(ctx context.Context, userID string, orderRequ
 	if err != nil {
 		return nil, err
 	}
-
-	//Josh, this is what I added to auto fill the order after 10 seconds
-	time.AfterFunc(10*time.Second, func() {
-
-		fillOrderErr := os.FillOrder(ctx, order, orderRequest.Price)
-
-		if fillOrderErr != nil {
-
-			fmt.Printf("Unable to fill order: %v", fillOrderErr)
-		}
-	})
 
 	return &OrderResponse{OrderID: createdOrder.ID}, nil
 }

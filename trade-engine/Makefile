@@ -14,3 +14,6 @@ run:
 # Usage: make build
 build:
 	docker build --platform linux/amd64 -t $(DOCKER_IMAGE) .
+
+build-mac:
+	docker build -t $(DOCKER_IMAGE) .

@@ -13,4 +13,5 @@ type UserProvider interface {
 	UpdateWatchList(ctx context.Context, watchList WatchList) (*WatchList, error)
 	CountWatchList(ctx context.Context, userID string) (int, error)
 	DeleteWatchList(ctx context.Context, id string) error
+	GetUserBalance(ctx context.Context, userID string) (*Balance, error)
 }
