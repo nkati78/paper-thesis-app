@@ -50,10 +50,14 @@ func (w *Worker) Start() {
 			marketData, err := w.marketDataService.GetMarketData(context.Background(), symbol)
 			if err != nil {
 				fmt.Println(err)
+				marketData = &MarketData{
+					Symbol: symbol,
+					Price:  value.LastTradePrice,
+				}
 			}
 
 			// check if new trading day
-			if marketData.TradeDate != time.Now().Format("2006-01-02") {
+			if marketData.TradeDate != time.Now().Format("2006-01-02") || marketData.TradeDate == "" {
 				newMarketData.TradeDate = time.Now().Format("2006-01-02")
 				newMarketData.StartingPrice = value.LastTradePrice
 				newMarketData.TodayHigh = value.LastTradePrice
@@ -64,9 +68,9 @@ func (w *Worker) Start() {
 			}
 
 			// check if we are todays high or low
-			if marketData.Price < value.LastTradePrice {
+			if value.LastTradePrice < marketData.Price {
 				newMarketData.TodayHigh = value.LastTradePrice
-			} else if marketData.Price > value.LastTradePrice {
+			} else if value.LastTradePrice > marketData.Price {
 				newMarketData.TodayLow = value.LastTradePrice
 			}
 

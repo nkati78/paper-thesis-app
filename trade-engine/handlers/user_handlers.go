@@ -92,12 +92,14 @@ func (uh UserHandler) GetBalance(c *gin.Context) (HTTPStatusCode, interface{}) {
 
 	balance, err := uh.userService.GetUserBalance(c, userID)
 	if err != nil {
+		fmt.Println(err)
 		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
 	}
 
 	// get open positions for the user and calculate the total value
 	positions, err := uh.orderService.GetPositionsByUserID(c, userID)
 	if err != nil {
+		fmt.Println(err)
 		return HTTPStatusInternalServerError, HTTPError{Message: "Internal server error"}
 	}
 
