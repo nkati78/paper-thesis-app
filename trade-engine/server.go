@@ -20,7 +20,7 @@ func StartServer(orderService orders.OrderService, userService users.UserService
 	auth := security.NewAuth([]byte("1337-secret"))
 
 	orderHandler := handlers.NewOrderHandler(orderService)
-	userHandler := handlers.NewUserHandler(userService, auth)
+	userHandler := handlers.NewUserHandler(userService, orderService, auth)
 	marketDataHandler := handlers.NewMarketDataHandler(marketDataService)
 
 	// Start the server

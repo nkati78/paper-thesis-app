@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/paper-thesis/trade-engine/orders/data"
+	"github.com/paper-thesis/trade-engine/users"
 	userData "github.com/paper-thesis/trade-engine/users"
-	balanceData "github.com/paper-thesis/trade-engine/users/data"
 )
 
 type OrderRequest struct {
@@ -23,16 +23,16 @@ type OrderResponse struct {
 	OrderID string `json:"order_id"`
 }
 
-func NewOrderService(dal data.OrderProvider) OrderService {
+func NewOrderService(dal data.OrderProvider, userService users.UserService) OrderService {
 	return OrderService{
-		dal: dal,
+		dal:         dal,
+		userService: userService,
 	}
 }
 
 type OrderService struct {
-	dal data.OrderProvider
-	bd  balanceData.DataProvider
-	ud  userData.UserService
+	dal         data.OrderProvider
+	userService userData.UserService
 }
 
 func (os OrderService) CreateOrder(ctx context.Context, userID string, orderRequest OrderRequest) (*OrderResponse, error) {
@@ -171,6 +171,7 @@ func (os OrderService) UpdatePositionsBySymbol(ctx context.Context, symbol strin
 func (os OrderService) GetPositionsByUserID(ctx context.Context, userID string) ([]*Position, error) {
 	positions, err := os.dal.GetUserPositions(ctx, userID)
 	if err != nil {
+		fmt.Println("Error getting user positions: ", err)
 		return nil, err
 	}
 

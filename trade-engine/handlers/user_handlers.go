@@ -16,10 +16,11 @@ type UserHandler struct {
 	auth         security.Auth
 }
 
-func NewUserHandler(userService users.UserService, auth security.Auth) *UserHandler {
+func NewUserHandler(userService users.UserService, orderService orders.OrderService, auth security.Auth) *UserHandler {
 	return &UserHandler{
-		userService: userService,
-		auth:        auth,
+		userService:  userService,
+		orderService: orderService,
+		auth:         auth,
 	}
 }
 
