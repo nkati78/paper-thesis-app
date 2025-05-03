@@ -8,14 +8,12 @@ import (
 )
 
 type Symbols struct {
-	bun.BaseModel    `bun:"table:symbols,alias:s"`
-	ID               string    `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
-	Symbol           string    `bun:"symbol"`
-	Exchange         string    `bun:"exchange"`
-	LastTradePrice   uint64    `bun:"last_trade_price"`
-	PreviousDayClose uint64    `bun:"previous_day_close"`
-	OpenPrice        uint64    `bun:"open_price"`
-	TradeDate        time.Time `bun:"trade_date"`
+	bun.BaseModel      `bun:"table:symbols,alias:s"`
+	ID                 string    `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
+	Symbol             string    `bun:"symbol"`
+	Exchange           string    `bun:"exchange"`
+	LastTradePrice     uint64    `bun:"last_trade_price"`
+	LastTradeTimestamp time.Time `bun:"last_trade_timestamp"`
 }
 
 // GetSymbols is a function that returns all symbols.

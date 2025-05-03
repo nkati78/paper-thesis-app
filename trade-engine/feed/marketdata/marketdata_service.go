@@ -134,10 +134,10 @@ func (m MarketDataService) GetSymbol(ctx context.Context, symbol string) (*Symbo
 func (m MarketDataService) UpsertSymbol(ctx context.Context, symbol SymbolData) (*SymbolData, error) {
 	// Upsert symbol
 	data := data.Symbols{
-		Symbol:         symbol.Symbol,
-		Exchange:       symbol.Exchange,
-		LastTradePrice: symbol.LastTradePrice,
-		OpenPrice:      symbol.OpenPrice,
+		Symbol:             symbol.Symbol,
+		Exchange:           symbol.Exchange,
+		LastTradePrice:     symbol.LastTradePrice,
+		LastTradeTimestamp: time.Now(),
 	}
 
 	_, err := m.dal.UpsertSymbol(ctx, data)
