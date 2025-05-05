@@ -9,9 +9,7 @@ export default function DashboardLayout ({
     return (
 
         <section>
-
             {children}
-
         </section>
     );
 

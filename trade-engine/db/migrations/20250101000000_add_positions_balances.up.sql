@@ -39,7 +39,7 @@ CREATE TABLE symbols (
     id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     symbol     VARCHAR(255) NOT NULL,
     exchange   VARCHAR(255) NOT NULL,
-    s.last_trade_price INT,
+    last_trade_price INT,
     last_trade_timestamp TIMESTAMP,
     created_at TIMESTAMP    DEFAULT now(),
     updated_at TIMESTAMP    DEFAULT now()

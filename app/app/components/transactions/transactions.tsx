@@ -13,24 +13,21 @@ import ArrowDownIcon from "@/shadcn_svg/arrow_down_icon";
 import ArrowUpIcon from "@/shadcn_svg/arrow_up_icon";
 import FilterIcon from "@/shadcn_svg/filter_icon";
 
-export default function Transactions(props: {
-    transactions: PTTransaction[]
-}) {
+// TODO: Refactor once order endpoint is showing all data
+export default function Transactions(props: { transactions: PTTransaction[] }) {
 
-    const {
-        transactions
-    } = props;
+    const { transactions } = props;
 
-    const [filters, setFilters] = useState({
+    const [ filters, setFilters ] = useState({
         type: "all",
         ticker: "all",
     });
-    const [dateFilter, setDateFilter] = useState({
+    const [ dateFilter, setDateFilter ] = useState({
         from: new Date((new Date()).setDate((new Date()).getDate() - 30)),
         to: new Date((new Date()).setDate((new Date()).getDate()))
     });
-    const [sortColumn, setSortColumn] = useState("date");
-    const [sortDirection, setSortDirection] = useState("asc");
+    const [ sortColumn, setSortColumn ] = useState("date");
+    const [ sortDirection, setSortDirection ] = useState("asc");
 
     const filteredTransactions = useMemo(() => {
         return transactions
@@ -55,17 +52,19 @@ export default function Transactions(props: {
                 }
             });
     }, [filters, transactions, sortColumn, sortDirection, dateFilter]);
+
     const totalGains = useMemo(() => {
         return filteredTransactions.reduce((total, transaction) => {
-            if (transaction.type === "Sell") {
+            if (transaction.type === "sell") {
                 return total + transaction.price * transaction.amount;
             }
             return total;
         }, 0);
     }, [filteredTransactions]);
+
     const totalLosses = useMemo(() => {
         return filteredTransactions.reduce((total, transaction) => {
-            if (transaction.type === "Buy") {
+            if (transaction.type === "buy") {
                 return total + transaction.price * transaction.amount;
             }
             return total;
@@ -95,8 +94,8 @@ export default function Transactions(props: {
                                 onValueChange={(value) => setFilters({ ...filters, type: value })}
                             >
                                 <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
-                                <DropdownMenuRadioItem value="Buy">Buy</DropdownMenuRadioItem>
-                                <DropdownMenuRadioItem value="Sell">Sell</DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem value="buy">Buy</DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem value="sell">Sell</DropdownMenuRadioItem>
                             </DropdownMenuRadioGroup>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -124,7 +123,7 @@ export default function Transactions(props: {
             <div className="flex-1 overflow-auto border rounded-lg">
                 <Table>
                     <TableHeader>
-                        <TableRow>
+                        <TableRow className="no-hover">
                             <TableHead
                                 className="cursor-pointer"
                                 onClick={() => {
@@ -210,7 +209,7 @@ export default function Transactions(props: {
                             <TableRow key={transaction.id}>
                                 <TableCell>{transaction.date}</TableCell>
                                 <TableCell>
-                                    <Badge variant={transaction.type === "Buy" ? "secondary" : "outline"}>{transaction.type}</Badge>
+                                    <Badge variant={transaction.type === "buy" ? "secondary" : "outline"}>{transaction.type}</Badge>
                                 </TableCell>
                                 <TableCell>
                                     <Badge
@@ -234,7 +233,7 @@ export default function Transactions(props: {
                                 <TableCell className="text-right">{transaction.amount}</TableCell>
                                 <TableCell>{transaction.ticker}</TableCell>
                                 <TableCell className="text-right">${transaction.price.toFixed(2)}</TableCell>
-                                <TableCell className={`text-right ${transaction.type === "Buy" ? "text-red-500" : "text-green-500"}`}>
+                                <TableCell className={`text-right ${transaction.type === "buy" ? "text-red-500" : "text-green-500"}`}>
                                     ${(transaction.price * transaction.amount).toFixed(2)}
                                 </TableCell>
                             </TableRow>

@@ -9,10 +9,9 @@ export default function AuthLayout ({
     return (
 
         <section>
-
             {children}
-
         </section>
+
     );
 
 }

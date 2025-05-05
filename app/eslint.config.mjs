@@ -9,14 +9,7 @@ export default [
         files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"]
     },
     {
-        ignores: ["public/*", "node_modules/*", ".next/*"]
-    },
-    {
-        rules: {
-            semi: ["error"],
-            indent: ["error"],
-            "object-curly-spacing": ["error", "always"],
-        }
+        ignores: ["public/*", "node_modules/*", ".next/*", "../fake-feed/src/*"]
     },
     {
         languageOptions: {
@@ -24,5 +17,13 @@ export default [
         }
     },
     Js.configs.recommended,
-    ...tseslint.configs.recommended
+    ...tseslint.configs.recommended,
+    {
+        rules: {
+            semi: ["error"],
+            indent: ["error"],
+            "object-curly-spacing": ["error", "always"],
+            "prefer-const": "off"
+        }
+    },
 ];

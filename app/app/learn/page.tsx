@@ -1,20 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Progress } from "../components/shadecn_components/ui/progress";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../components/shadecn_components/ui/card";
-import { Button } from "../components/shadecn_components/ui/button";
-import { useAppDispatch } from "../../lib/redux/hooks";
+import { Progress } from "@/shadcn/progress";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/shadcn/card";
+import { Button } from "@/shadcn/button";
 import { classes } from "../../lib/std";
 
 export default function Component() {
-    const [progress, setProgress] = useState(0);
-    const [completedModules, setCompletedModules] = useState<number[]>([]);
-
-    // TODO: Base dark mode off user state value
-
-
-    const dispatch = useAppDispatch();
 
     const modules = [
         {
@@ -115,6 +107,10 @@ export default function Component() {
             ),
         },
     ];
+
+    const [ progress, setProgress ] = useState(0);
+    const [ completedModules, setCompletedModules ] = useState<number[]>([]);
+
     const handleModuleCompletion = (moduleId: number) => {
 
         const module_count = modules.length;
@@ -127,6 +123,7 @@ export default function Component() {
         // dispatch(incrementedByAmountPC(modules[moduleId - 1].reward));
 
     };
+
     return (
         <div className="flex flex-col gap-8">
             <div className="md:flex items-center justify-between">
@@ -183,24 +180,3 @@ function CheckIcon(props) {
         </svg>
     );
 }
-
-
-// function XIcon(props) {
-//     return (
-//         <svg
-//             {...props}
-//             xmlns="http://www.w3.org/2000/svg"
-//             width="24"
-//             height="24"
-//             viewBox="0 0 24 24"
-//             fill="none"
-//             stroke="currentColor"
-//             strokeWidth="2"
-//             strokeLinecap="round"
-//             strokeLinejoin="round"
-//         >
-//             <path d="M18 6 6 18" />
-//             <path d="m6 6 12 12" />
-//         </svg>
-//     )
-// }

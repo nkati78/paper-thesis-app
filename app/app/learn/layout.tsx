@@ -9,9 +9,7 @@ export default function LearnLayout ({
 
     return (
         <div className={classes(['flex justify-center md:mt-20 p-10 md:p-0'])}>
-
             {children}
-
         </div>
     );
 

@@ -1,8 +1,5 @@
-// Generic error page
+// TODO: FLESH OUT ERROR PAGE
 export default function Error () {
-
-    // TODO: Base dark mode off user state value
-
 
     return (
         <div>

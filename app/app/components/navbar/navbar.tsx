@@ -1,75 +1,39 @@
 'use client';
 
 import Link from "next/link";
-import {
-    DropdownMenu,
-    DropdownMenuContent, DropdownMenuItem,
-    DropdownMenuLabel, DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "@/shadcn/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shadcn/dropdown-menu";
 import { Button } from "@/shadcn/button";
 import { signOut } from "next-auth/react";
 import { useSelector } from "react-redux";
 import { classes } from "../../../lib/std";
 import { useAppDispatch } from "../../../lib/redux/hooks";
 import { Switch } from "@/shadcn/switch";
-import {
-    selectDarkMode,
-    selectUser,
-    selectCurrentPath,
-    updateDarkMode,
-    updateUser,
-    updateCurrentPath,
-    updatePreviousPath
-} from "@/redux/user/userSlice";
+import { selectDarkMode, selectUser, selectCurrentPath, updateDarkMode, updateCurrentPath, updatePreviousPath } from "@/redux/user/userSlice";
 import { selectWallet } from "@/redux/user/userSlice";
 import { useEffect } from "react";
-import { userState } from "../../../types/redux_types";
 import { Badge } from "@/shadcn/badge";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import MountainIcon from "@/shadcn_svg/mountain_icon";
 import WalletIcon from "@/shadcn_svg/wallet_icon";
 
-export default function Navbar (
-    props: {
-        userData: userState
-    }) {
+// TODO: Highlight button for whatever page you are on
 
-    const {
-        userData
-    } = props;
+export default function Navbar () {
 
-    const dark_mode = useSelector(selectDarkMode);
+    const darkMode = useSelector(selectDarkMode);
     const wallet = useSelector(selectWallet);
     const dispatch = useAppDispatch();
     const user = useSelector(selectUser);
     const reduxPath = useSelector(selectCurrentPath);
     const path = usePathname();
 
+    // Navigation Hook
     useEffect(() => {
 
-        if (userData && !user.id) {
-
-            const userDataModified = {
-                ...userData,
-                dark_mode: dark_mode,
-                current_path: '/dashboard',
-                previous_path: '/auth/login',
-            };
-
-            dispatch(updateUser(userDataModified));
-
-        }
-
-    }, [userData]);
-
-    useEffect(() => {
-
-        if (userData && user.id && path) {
+        if (user.id && path) {
 
             dispatch(updatePreviousPath(reduxPath));
-
             dispatch(updateCurrentPath(path));
 
         }
@@ -107,7 +71,7 @@ export default function Navbar (
                 </Link>
                 <div className={classes(['flex flex-column md:flex-row md:justify-center mb-5 md:mb-32 lg:mb-40'])}>
                     {/*{*/}
-                    {/*    dark_mode ? <TransparentLogo/> : <TransparentLogoDark/>*/}
+                    {/*    darkMode ? <TransparentLogo/> : <TransparentLogoDark/>*/}
                     {/*}*/}
                 </div>
                 <Link href={"/account"}>
@@ -132,7 +96,7 @@ export default function Navbar (
                     }
                 </div>
                 <Switch
-                    defaultChecked={dark_mode}
+                    defaultChecked={darkMode}
                     onCheckedChange={editDarkMode}
                 />
                 <DropdownMenu modal={false}>

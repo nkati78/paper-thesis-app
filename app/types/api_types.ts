@@ -21,3 +21,18 @@ export interface PTBalance {
     user_id: string,
     balance: string
 }
+
+export interface Order {
+    Filled: boolean
+    FilledTime: string,
+    OrderID: string,
+    Price: number,
+    Quantity: number,
+    QuantityFilled: number,
+    Side: string,
+    Status: string,
+    Symbol: string,
+    Timestamp: string
+    Type: string,
+    UserID: string
+}
