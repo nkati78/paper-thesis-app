@@ -2,6 +2,7 @@ package marketdata
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/paper-thesis/trade-engine/feed/marketdata/data"
@@ -62,6 +63,8 @@ func (m MarketDataService) GetMarketData(ctx context.Context, symbol string) (*M
 		percentageChange = (priceChange * 100) / data.StartingPrice
 	}
 
+	fmt.Println("trade date in db: ", data.TradeDate)
+
 	return &MarketData{
 		ID:               data.ID,
 		Symbol:           data.Symbol,
@@ -69,6 +72,13 @@ func (m MarketDataService) GetMarketData(ctx context.Context, symbol string) (*M
 		StartingPrice:    data.StartingPrice,
 		PriceChange:      priceChange,
 		PercentageChange: percentageChange,
+		TradeDate:        data.TradeDate,
+		TodayHigh:        data.TodayHigh,
+		TodayLow:         data.TodayLow,
+		YesterdayClose:   data.YesterdayClose,
+		YesterdayOpen:    data.YesterdayOpen,
+		YesterdayHigh:    data.YesterdayHigh,
+		YesterdayLow:     data.YesterdayLow,
 		UpdatedAt:        data.UpdatedAt.String(),
 	}, nil
 }
@@ -92,10 +102,12 @@ func (m MarketDataService) UpsertMarketData(ctx context.Context, marketData Mark
 
 	//fmt.Println(data)
 
-	_, err := m.dal.UpsertMarketPrice(ctx, data)
+	res, err := m.dal.UpsertMarketPrice(ctx, data)
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println("New Data: ", res)
 
 	return &marketData, nil
 }
