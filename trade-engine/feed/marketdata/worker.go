@@ -98,6 +98,7 @@ func (w *Worker) Start() {
 				fmt.Println("Checking order: ", order)
 				if order.Type == orders.Market && order.Status == orders.Open {
 					w.orderService.FillOrder(context.Background(), order, newPrice)
+					fmt.Println("FILL DA ORDER")
 				}
 			}
 

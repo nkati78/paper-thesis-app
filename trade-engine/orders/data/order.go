@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/uptrace/bun"
@@ -19,8 +20,8 @@ type Order struct {
 	UserID   string `bun:"user_id"`
 	Status   string `bun:"status"`
 
-	CreatedAt time.Time `bun:"created_at"`
-	UpdatedAt time.Time `bun:"updated_at"`
+	CreatedAt time.Time `bun:"created_at,nullzero,notnull,default:current_timestamp"`
+	UpdatedAt time.Time `bun:"updated_at,nullzero,notnull,default:current_timestamp"`
 }
 
 // GetUserOrders is a function that returns all orders for a user.
@@ -58,8 +59,10 @@ func (dp DataProvider) GetOrder(ctx context.Context, orderID string) (*Order, er
 }
 
 func (dp DataProvider) CreateOrder(ctx context.Context, order Order) (*Order, error) {
-	_, err := dp.db.NewInsert().Model(&order).Exec(ctx)
+	res, err := dp.db.NewInsert().Model(&order).Exec(ctx)
+	fmt.Println("HERE BE RESPONSE res: ", res)
 	if err != nil {
+		fmt.Println("AGH! Error creating order:", err)
 		return nil, err
 	}
 
@@ -67,10 +70,20 @@ func (dp DataProvider) CreateOrder(ctx context.Context, order Order) (*Order, er
 }
 
 func (dp DataProvider) UpdateOrder(ctx context.Context, order Order) (*Order, error) {
-	_, err := dp.db.NewUpdate().Model(&order).WherePK().Exec(ctx)
+	_, err := dp.db.NewUpdate().Model(&order).OmitZero().WherePK().Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	return &order, nil
+}
+
+func (o *Order) BeforeAppendModel(ctx context.Context, query bun.Query) error {
+	switch query.(type) {
+	case *bun.InsertQuery:
+		o.CreatedAt = time.Now()
+	case *bun.UpdateQuery:
+		o.UpdatedAt = time.Now()
+	}
+	return nil
 }

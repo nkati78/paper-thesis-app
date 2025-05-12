@@ -19,6 +19,7 @@ type OrderResponse struct {
 	Quantity  uint32 `json:"quantity"`
 	Side      string `json:"side"`
 	Type      string `json:"type"`
+	Timestamp string `json:"timestamp"`
 	UpdatedAt string `json:"updatedAt"`
 }
 
@@ -52,7 +53,8 @@ func (oh OrderHandler) HandleCreateOrder(c *gin.Context) {
 	}
 
 	orderResponse := OrderResponse{
-		OrderID: order.OrderID,
+		OrderID:   order.OrderID,
+		Timestamp: order.Timestamp,
 	}
 
 	c.IndentedJSON(http.StatusCreated, orderResponse)

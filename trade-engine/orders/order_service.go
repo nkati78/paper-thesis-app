@@ -20,7 +20,8 @@ type OrderRequest struct {
 }
 
 type OrderResponse struct {
-	OrderID string `json:"order_id"`
+	OrderID   string `json:"order_id"`
+	Timestamp string `json:"timestamp"`
 }
 
 func NewOrderService(dal data.OrderProvider, userService users.UserService) OrderService {
@@ -61,15 +62,13 @@ func (os OrderService) CreateOrder(ctx context.Context, userID string, orderRequ
 	fmt.Println("Order book updated: ", orderBooks)
 
 	orderDB := order.ToDB()
-	orderDB.CreatedAt = time.Now()
-	orderDB.UpdatedAt = time.Now()
 
-	createdOrder, err := os.dal.CreateOrder(ctx, order.ToDB())
+	createdOrder, err := os.dal.CreateOrder(ctx, orderDB)
 	if err != nil {
 		return nil, err
 	}
 
-	return &OrderResponse{OrderID: createdOrder.ID}, nil
+	return &OrderResponse{OrderID: createdOrder.ID, Timestamp: createdOrder.CreatedAt.Format("2006-01-02T15:04:05")}, nil
 }
 
 func (os OrderService) GetOrderBook(symbol string) OrderBook {
