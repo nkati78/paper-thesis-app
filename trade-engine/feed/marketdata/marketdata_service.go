@@ -31,8 +31,8 @@ type MarketData struct {
 	TodayHigh        uint64 `json:"todayHigh"`
 	TodayLow         uint64 `json:"todayLow"`
 	TradeDate        string `json:"tradeDate"`
-	PriceChange      uint64 `json:"priceChange"`
-	PercentageChange uint64 `json:"percentageChange"`
+	PriceChange      int64  `json:"priceChange"`
+	PercentageChange string `json:"percentageChange"`
 	UpdatedAt        string `json:"updated_at"`
 }
 
@@ -53,14 +53,16 @@ func (m MarketDataService) GetMarketData(ctx context.Context, symbol string) (*M
 	}
 
 	// calculate the price change
-	priceChange := data.Price - data.StartingPrice
+	priceChange := int64(data.Price - data.StartingPrice)
 
-	var percentageChange uint64
+	var percentageChange string
 
 	if data.StartingPrice == 0 {
-		percentageChange = 100.0
+		percentageChange = "100.00"
 	} else {
-		percentageChange = (priceChange * 100) / data.StartingPrice
+		percentageChange = fmt.Sprintf("%.3f", float64(priceChange)/float64(data.StartingPrice))
+		// round to 2 decimal places as a float
+
 	}
 
 	fmt.Println("trade date in db: ", data.TradeDate)

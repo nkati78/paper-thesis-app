@@ -14,7 +14,7 @@ type MarketPrice struct {
 	Symbol         string    `bun:"symbol"`
 	Price          uint64    `bun:"price"`
 	StartingPrice  uint64    `bun:"starting_price"`
-	TradeDate      string    `bun:"trade_date"`
+	TradeDate      string    `bun:"trade_date,omitzero"`
 	TodayHigh      uint64    `bun:"today_high"`
 	TodayLow       uint64    `bun:"today_low"`
 	YesterdayClose uint64    `bun:"yesterday_close"`

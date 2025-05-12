@@ -42,10 +42,6 @@ func (w *Worker) Start() {
 		}
 
 		for symbol, value := range quotes {
-			newMarketData := MarketData{
-				Symbol: symbol,
-				Price:  value.LastTradePrice,
-			}
 			// get market data from the database
 			marketData, err := w.marketDataService.GetMarketData(context.Background(), symbol)
 			if err != nil {
@@ -56,37 +52,49 @@ func (w *Worker) Start() {
 				}
 			}
 
-			newMarketData.Price = value.LastTradePrice
+			marketData.Price = value.LastTradePrice
+
+			// first time we are getting the market data
+			if marketData.StartingPrice == 0 {
+				marketData.StartingPrice = value.LastTradePrice
+				marketData.YesterdayOpen = value.LastTradePrice - 1000
+				marketData.TodayHigh = value.LastTradePrice
+				marketData.TodayLow = value.LastTradePrice
+				marketData.YesterdayClose = value.LastTradePrice - 500
+				marketData.YesterdayHigh = value.LastTradePrice + 400
+				marketData.YesterdayLow = value.LastTradePrice - 1000
+				marketData.TradeDate = time.Now().Format("2006-01-02")
+			}
 
 			// check if new trading day
-			if marketData.TradeDate != time.Now().Format("2006-01-02") || marketData.TradeDate == "" {
+			if marketData.TradeDate != time.Now().Format("2006-01-02") {
 				fmt.Println("\n==================\nNew trading day\n==================\n")
 				fmt.Println("Old trade date: ", marketData.TradeDate)
 				fmt.Println("New trade date: ", time.Now().Format("2006-01-02"))
-				newMarketData.TradeDate = time.Now().Format("2006-01-02")
-				newMarketData.StartingPrice = value.LastTradePrice
-				newMarketData.TodayHigh = value.LastTradePrice
-				newMarketData.TodayLow = value.LastTradePrice
-				newMarketData.YesterdayClose = newMarketData.Price
-				newMarketData.YesterdayHigh = newMarketData.TodayHigh
-				newMarketData.YesterdayLow = newMarketData.TodayLow
+				marketData.TradeDate = time.Now().Format("2006-01-02")
+				marketData.StartingPrice = value.LastTradePrice
+				marketData.TodayHigh = value.LastTradePrice
+				marketData.TodayLow = value.LastTradePrice
+				marketData.YesterdayClose = marketData.Price
+				marketData.YesterdayHigh = marketData.TodayHigh
+				marketData.YesterdayLow = marketData.TodayLow
 			}
 
 			// check if we are todays high or low
 			if value.LastTradePrice < marketData.TodayLow || marketData.TodayLow == 0 {
-				newMarketData.TodayHigh = value.LastTradePrice
+				marketData.TodayLow = value.LastTradePrice
 			}
 
 			if value.LastTradePrice > marketData.TodayHigh || marketData.TodayHigh == 0 {
-				newMarketData.TodayLow = value.LastTradePrice
+				marketData.TodayHigh = value.LastTradePrice
 			}
 
 			// check if we are the starting price
 			if marketData.StartingPrice == 0 {
-				newMarketData.StartingPrice = value.LastTradePrice
+				marketData.StartingPrice = value.LastTradePrice
 			}
 
-			_, err = w.marketDataService.UpsertMarketData(context.Background(), newMarketData)
+			_, err = w.marketDataService.UpsertMarketData(context.Background(), *marketData)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -98,7 +106,6 @@ func (w *Worker) Start() {
 				fmt.Println("Checking order: ", order)
 				if order.Type == orders.Market && order.Status == orders.Open {
 					w.orderService.FillOrder(context.Background(), order, newPrice)
-					fmt.Println("FILL DA ORDER")
 				}
 			}
 
