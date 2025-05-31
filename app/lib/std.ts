@@ -6,6 +6,17 @@ export function classes (classes: string[]) {
 
 }
 
+export function subtract_days (time: string, days: number) {
+
+    const date = new Date(time);
+    date.setDate(date.getDate() - days);
+
+    return date.toISOString().split('T')[0];
+
+}
+
+
+//Client side API calls
 export async function get_symbol (symbol: string) {
 
     return await fetch(`${settings.local_api.symbol}?symbol=${symbol}`, {

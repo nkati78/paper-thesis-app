@@ -29,15 +29,15 @@ export default function Positions(props: {positionState:  positionState[] }) {
                     {positionState.length > 0 ? positionState.map((position) => (
                         <TableRow key={position.orderId}>
                             <TableCell>{position.symbol}</TableCell>
-                            <TableCell className={position.dayChangeDollar > 0 ? "text-green-500" : ""}>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format((position.currentPrice / 100))}</TableCell>
+                            <TableCell className={position.dayChangeDollar >= 0 ? "text-green-500" : "text-red-500"}>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format((position.currentPrice / 100))}</TableCell>
                             <TableCell>{position.quantity}</TableCell>
                             <TableCell>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.costBasis / 100)}</TableCell>
                             <TableCell>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.averagePrice / 100)}</TableCell>
-                            <TableCell>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.value / 100)}</TableCell>
-                            <TableCell className="text-green-500">{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.dayChangeDollar / 100)}</TableCell>
-                            <TableCell className="text-green-500">{position.dayChangePct}%</TableCell>
-                            <TableCell className="text-green-500">{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.totalChangeDollar / 100)}</TableCell>
-                            <TableCell className="text-green-500">{position.totalChangePct}%</TableCell>
+                            <TableCell className={position.totalChangeDollar >= 0 ? "text-green-500" : "text-red-500"}>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.value / 100)}</TableCell>
+                            <TableCell className={position.dayChangeDollar >= 0 ? "text-green-500" : "text-red-500"}>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.dayChangeDollar / 100)}</TableCell>
+                            <TableCell className={position.dayChangeDollar >= 0 ? "text-green-500" : "text-red-500"}>{Intl.NumberFormat('en-US', { style: "percent" }).format(position.dayChangePct)}</TableCell>
+                            <TableCell className={position.totalChangeDollar >= 0 ? "text-green-500" : "text-red-500"}>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.totalChangeDollar / 100)}</TableCell>
+                            <TableCell className={position.totalChangeDollar >= 0 ? "text-green-500" : "text-red-500"}>{Intl.NumberFormat('en-US', { style: "percent" }).format(position.totalChangePct)}</TableCell>
                         </TableRow>)) : (
                         <div>You don't have any open positions! Start trading now</div>)}
                     {/*    TODO: NEED TO ADD DETAILS TO EMPTY POSITION MESSAGE*/}

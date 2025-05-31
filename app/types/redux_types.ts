@@ -49,4 +49,12 @@ export interface symbolWatchState extends symbolState {
     lastPrice: number,
     dayChangeDollar: number,
     dayChangePercent: number,
+    startingPrice: number,
+    yesterdayClose: number,
+    yesterdayOpen: number,
+    yesterdayHigh: number,
+    yesterdayLow: number,
+    todayOpen: number,
+    todayHigh: number,
+    todayLow: number,
 }

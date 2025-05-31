@@ -20,6 +20,7 @@ import TradeModal from "../components/trade_modal/trade_modal";
 import { useAppDispatch } from "../../lib/redux/hooks";
 import Watchlist from "../components/watchlist/watchlist";
 import Positions from "../components/open_positions/open_positions";
+import CandlestickChart from "../components/candlestick_chart/candlestick_chart";
 
 // TODO: CANDLES SHOULD REPRESENT CHOSEN TIME INCREMENT 1m, 5m, 10m, 15m
 // TODO: ENTIRE CHART SHOULD HAVE A DATE RANGE TO CHOOSE FROM, by default the last trading day, 1m increments
@@ -43,7 +44,15 @@ export default function Component () {
     const [ tradeModalState, setTradeModalState ] = useState<symbolState>({
         current_price: (positions[0].symbol ? positions[0].currentPrice : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.price : symbolsToWatch[0].price)),
         price_change: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangePercent : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangePercent : symbolsToWatch[0].dayChangePercent)),
-        symbol: (positions[0].symbol ? positions[0].symbol : (reduxWatchlist[0].symbol ? reduxWatchlist[0].symbol : symbolsToWatch[0].symbol))
+        symbol: (positions[0].symbol ? positions[0].symbol : (reduxWatchlist[0].symbol ? reduxWatchlist[0].symbol : symbolsToWatch[0].symbol)),
+        startingPrice: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.startingPrice : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.startingPrice : symbolsToWatch[0].startingPrice)),
+        yesterdayClose: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayClose : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayClose : symbolsToWatch[0].yesterdayClose)),
+        yesterdayOpen: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayOpen : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayOpen : symbolsToWatch[0].yesterdayOpen)),
+        yesterdayHigh: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayHigh : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayHigh : symbolsToWatch[0].yesterdayHigh)),
+        yesterdayLow: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayLow : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayLow : symbolsToWatch[0].yesterdayLow)),
+        todayOpen: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayOpen : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayOpen : symbolsToWatch[0].todayOpen)),
+        todayHigh: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayHigh : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayHigh : symbolsToWatch[0].todayHigh)),
+        todayLow: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayLow : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayLow : symbolsToWatch[0].todayLow)),
     });
     const [ watchlist, setWatchlist ] = useState<dashboardWatchList[]>([]);
     const [ watchlistSearch, setWatchlistSearch ] = useState<string>('');
@@ -97,6 +106,14 @@ export default function Component () {
                             price: symbol_data.price,
                             dayChangeDollar: symbol_data.priceChange,
                             dayChangePercent: symbol_data.precentageChange,
+                            startingPrice: symbol_data.startingPrice,
+                            yesterdayClose: symbol_data.yesterdayClose,
+                            yesterdayOpen: symbol_data.yesterdayOpen,
+                            yesterdayHigh: symbol_data.yesterdayHigh,
+                            yesterdayLow: symbol_data.yesterdayLow,
+                            todayOpen: symbol_data.todayOpen,
+                            todayHigh: symbol_data.todayHigh,
+                            todayLow: symbol_data.todayLow,
                         }));
 
                     }
@@ -139,6 +156,14 @@ export default function Component () {
                     price: checkSymbolsToWatch.price,
                     dayChangeDollar: checkSymbolsToWatch.dayChangeDollar,
                     dayChangePercent: checkSymbolsToWatch.dayChangePercent,
+                    startingPrice: checkSymbolsToWatch.startingPrice,
+                    yesterdayClose: checkSymbolsToWatch.yesterdayClose,
+                    yesterdayOpen: checkSymbolsToWatch.yesterdayOpen,
+                    yesterdayHigh: checkSymbolsToWatch.yesterdayHigh,
+                    yesterdayLow: checkSymbolsToWatch.yesterdayLow,
+                    todayOpen: checkSymbolsToWatch.todayOpen,
+                    todayHigh: checkSymbolsToWatch.todayHigh,
+                    todayLow: checkSymbolsToWatch.todayLow,
                 }));
 
             }
@@ -168,8 +193,20 @@ export default function Component () {
             setTradeModalState({
                 current_price: checkSymbolsToWatch.price,
                 price_change: checkSymbolsToWatch.dayChangePercent,
-                symbol: checkSymbolsToWatch.symbol
+                symbol: checkSymbolsToWatch.symbol,
+                startingPrice: checkSymbolsToWatch.startingPrice,
+                yesterdayClose: checkSymbolsToWatch.yesterdayClose,
+                yesterdayOpen: checkSymbolsToWatch.yesterdayOpen,
+                yesterdayHigh: checkSymbolsToWatch.yesterdayHigh,
+                yesterdayLow: checkSymbolsToWatch.yesterdayLow,
+                todayOpen: checkSymbolsToWatch.todayOpen,
+                todayHigh: checkSymbolsToWatch.todayHigh,
+                todayLow: checkSymbolsToWatch.todayLow,
             });
+
+            // candlestickSeries.update({
+            //     time: '2019-01-01', open: 110, high: 120, low: 100, close: 115
+            // });
 
         } else {
 
@@ -192,6 +229,14 @@ export default function Component () {
                     lastPrice: symbolFetch.startingPrice,
                     dayChangeDollar: symbolFetch.priceChange,
                     dayChangePercent: symbolFetch.percentageChange,
+                    startingPrice: symbolFetch.startingPrice,
+                    yesterdayClose: symbolFetch.yesterdayClose,
+                    yesterdayOpen: symbolFetch.yesterdayOpen,
+                    yesterdayHigh: symbolFetch.yesterdayHigh,
+                    yesterdayLow: symbolFetch.yesterdayLow,
+                    todayOpen: symbolFetch.todayOpen,
+                    todayHigh: symbolFetch.todayHigh,
+                    todayLow: symbolFetch.todayLow,
                 }));
 
                 setChartDefault(updatedChart);
@@ -200,7 +245,15 @@ export default function Component () {
                 setTradeModalState({
                     current_price: symbolFetch.price,
                     price_change: symbolFetch.dayChangePercent,
-                    symbol: symbolFetch.symbol
+                    symbol: symbolFetch.symbol,
+                    startingPrice: symbolFetch.startingPrice,
+                    yesterdayClose: symbolFetch.yesterdayClose,
+                    yesterdayOpen: symbolFetch.yesterdayOpen,
+                    yesterdayHigh: symbolFetch.yesterdayHigh,
+                    yesterdayLow: symbolFetch.yesterdayLow,
+                    todayOpen: symbolFetch.todayOpen,
+                    todayHigh: symbolFetch.todayHigh,
+                    todayLow: symbolFetch.todayLow,
                 });
 
             }
@@ -210,8 +263,6 @@ export default function Component () {
         setChartSearch('');
 
     };
-
-    const chart_color = user.dark_mode ? '240 5% 6%' : '0 0% 100%';
 
     //Positions Hook
     useEffect(() => {
@@ -239,7 +290,7 @@ export default function Component () {
                             userId: position.userId,
                             currentPrice: position.currentPrice,
                             costBasis: (position.costBasis ? position.costBasis : 150000) / position.quantity,
-                            averagePrice: (position.costBasis ? position.costBasis : 150000) / position.quantity,
+                            averagePrice: position.averagePrice,
                             quantity: position.quantity,
                             direction: position.direction,
                             orderId: position.orderId,
@@ -247,10 +298,10 @@ export default function Component () {
                             symbol: position.symbol,
                             status: position.status,
                             value: position.price * position.quantity,
-                            dayChangePct: 5.23,
-                            dayChangeDollar: 10000,
-                            totalChangeDollar: 235400,
-                            totalChangePct: 20.45,
+                            dayChangePct: 0,
+                            dayChangeDollar: 0,
+                            totalChangeDollar: 0,
+                            totalChangePct: 0,
                             createdAt: position.createdAt,
                             updatedAt: position.updatedAt,
                         };
@@ -271,6 +322,14 @@ export default function Component () {
                                         lastPrice: symbolFetch.startingPrice,
                                         dayChangeDollar: symbolFetch.priceChange,
                                         dayChangePercent: symbolFetch.percentageChange,
+                                        startingPrice: symbolFetch.startingPrice,
+                                        yesterdayClose: symbolFetch.yesterdayClose,
+                                        yesterdayOpen: symbolFetch.yesterdayOpen,
+                                        yesterdayHigh: symbolFetch.yesterdayHigh,
+                                        yesterdayLow: symbolFetch.yesterdayLow,
+                                        todayOpen: symbolFetch.todayOpen,
+                                        todayHigh: symbolFetch.todayHigh,
+                                        todayLow: symbolFetch.todayLow,
                                     }));
 
                                     if (!positionCheck) {
@@ -279,6 +338,10 @@ export default function Component () {
                                             ...newPos,
                                             currentPrice: symbolFetch.price,
                                             value: symbolFetch.price * position.quantity,
+                                            dayChangePct: (((symbolFetch.price * newPos.quantity) - (symbolFetch.yesterdayClose * newPos.quantity)) / (symbolFetch.yesterdayClose * newPos.quantity)),
+                                            dayChangeDollar: (symbolFetch.price * newPos.quantity) - (symbolFetch.yesterdayClose * newPos.quantity),
+                                            totalChangeDollar: (symbolFetch.price * newPos.quantity) - (newPos.averagePrice * newPos.quantity), //TODO: Change to cost basis once fixed?
+                                            totalChangePct: (((symbolFetch.price * newPos.quantity) - (newPos.averagePrice * newPos.quantity)) / (newPos.averagePrice * newPos.quantity)), //TODO: Change to cost basis once fixed?
                                         };
 
                                         setOpenPositions((prevPositions) => {
@@ -314,6 +377,10 @@ export default function Component () {
                                         ...newPos,
                                         currentPrice: symbolWatch.price,
                                         value: symbolWatch.price * position.quantity,
+                                        dayChangePct: (((symbolWatch.price * newPos.quantity) - (symbolWatch.yesterdayClose * newPos.quantity)) / (symbolWatch.yesterdayClose * newPos.quantity)),
+                                        dayChangeDollar: (symbolWatch.price * newPos.quantity) - (symbolWatch.yesterdayClose * newPos.quantity),
+                                        totalChangeDollar: (symbolWatch.price * newPos.quantity) - (newPos.averagePrice * newPos.quantity), //TODO: Change to cost basis once fixed?
+                                        totalChangePct: (((symbolWatch.price * newPos.quantity) - (newPos.averagePrice * newPos.quantity)) / (newPos.averagePrice * newPos.quantity)), //TODO: Change to cost basis once fixed?
                                     };
 
                                     return [...prevPositions, newPos];
@@ -336,10 +403,11 @@ export default function Component () {
                                         return {
                                             ...pos,
                                             profitLoss: newPos.profitLoss,
-                                            dayChangePct: 5.23,
-                                            dayChangeDollar: 10000,
-                                            totalChangeDollar: 235400,
-                                            totalChangePct: 20.45,
+                                            value: symbolWatch.price * position.quantity,
+                                            dayChangePct: (((symbolWatch.price * newPos.quantity) - (symbolWatch.yesterdayClose * newPos.quantity)) / (symbolWatch.yesterdayClose * newPos.quantity)),
+                                            dayChangeDollar: (symbolWatch.price * newPos.quantity) - (symbolWatch.yesterdayClose * newPos.quantity),
+                                            totalChangeDollar: (symbolWatch.price * newPos.quantity) - (newPos.averagePrice * newPos.quantity), //TODO: Change to cost basis once fixed?
+                                            totalChangePct: (((symbolWatch.price * newPos.quantity) - (newPos.averagePrice * newPos.quantity)) / (newPos.averagePrice * newPos.quantity)), //TODO: Change to cost basis once fixed?
                                             updatedAt: newPos.updatedAt,
                                         };
 
@@ -376,68 +444,6 @@ export default function Component () {
         };
 
     }, [positions, symbolsToWatch]);
-
-    //Charting Hook
-    useEffect(() => {
-
-        if (typeof window !== "undefined" && document) {
-
-            const chartDiv = document.getElementById('mainChart');
-
-            if (chartDiv) {
-
-                const chart_options = {
-                    layout: {
-                        background: {
-                            type: ColorType.Solid,
-                            color: chart_color as string
-                        }
-                    }
-                };
-
-                const chart = createChart(chartDiv, chart_options);
-
-                const areaSeries = chart.addAreaSeries({
-                    lineColor: '#2962FF', topColor: '#2962FF',
-                    bottomColor: 'rgba(41, 98, 255, 0.28)',
-                });
-
-                areaSeries.setData([
-                    { time: '2018-12-22', value: 32.51 },
-                    { time: '2018-12-23', value: 31.11 },
-                    { time: '2018-12-24', value: 27.02 },
-                    { time: '2018-12-25', value: 27.32 },
-                    { time: '2018-12-26', value: 25.17 },
-                    { time: '2018-12-27', value: 28.89 },
-                    { time: '2018-12-28', value: 25.46 },
-                    { time: '2018-12-29', value: 23.92 },
-                    { time: '2018-12-30', value: 22.68 },
-                    { time: '2018-12-31', value: 22.67 },
-                ]);
-
-                const candlestickSeries = chart.addCandlestickSeries({
-                    upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
-                    wickUpColor: '#26a69a', wickDownColor: '#ef5350',
-                });
-                candlestickSeries.setData([
-                    { time: '2018-12-22', open: 75.16, high: 82.84, low: 36.16, close: 45.72 },
-                    { time: '2018-12-23', open: 45.12, high: 53.90, low: 45.12, close: 48.09 },
-                    { time: '2018-12-24', open: 60.71, high: 60.71, low: 53.39, close: 59.29 },
-                    { time: '2018-12-25', open: 68.26, high: 68.26, low: 59.04, close: 60.50 },
-                    { time: '2018-12-26', open: 67.71, high: 105.85, low: 66.67, close: 91.04 },
-                    { time: '2018-12-27', open: 91.04, high: 121.40, low: 82.70, close: 111.40 },
-                    { time: '2018-12-28', open: 111.51, high: 142.83, low: 103.34, close: 131.25 },
-                    { time: '2018-12-29', open: 131.33, high: 151.17, low: 77.68, close: 96.43 },
-                    { time: '2018-12-30', open: 106.33, high: 110.20, low: 90.39, close: 98.10 },
-                    { time: '2018-12-31', open: 109.87, high: 114.69, low: 85.66, close: 111.26 },
-                ]);
-
-                chart.timeScale().fitContent();
-
-            }
-        }
-
-    }, []);
 
     //Wathclist Hook
     useEffect(() => {
@@ -531,6 +537,10 @@ export default function Component () {
                                             changes: {
                                                 currentPrice: symbolFetch.price,
                                                 value: symbolFetch.price * opItem.quantity,
+                                                dayChangePct: (((symbolFetch.price * opItem.quantity) - (symbolFetch.yesterdayClose * opItem.quantity)) / (symbolFetch.yesterdayClose * opItem.quantity)),
+                                                dayChangeDollar: (symbolFetch.price * opItem.quantity) - (symbolFetch.yesterdayClose * opItem.quantity),
+                                                totalChangeDollar: (symbolFetch.price * opItem.quantity) - (opItem.averagePrice * opItem.quantity), //TODO: Change to cost basis once fixed?
+                                                totalChangePct: (((symbolFetch.price * opItem.quantity) - (opItem.averagePrice * opItem.quantity)) / (opItem.averagePrice * opItem.quantity)), //TODO: Change to cost basis once fixed?
                                             }
                                         }));
 
@@ -538,6 +548,10 @@ export default function Component () {
                                             ...opItem,
                                             currentPrice: symbolFetch.price,
                                             value: symbolFetch.price * opItem.quantity,
+                                            dayChangePct: (((symbolFetch.price * opItem.quantity) - (symbolFetch.yesterdayClose * opItem.quantity)) / (symbolFetch.yesterdayClose * opItem.quantity)),
+                                            dayChangeDollar: (symbolFetch.price * opItem.quantity) - (symbolFetch.yesterdayClose * opItem.quantity),
+                                            totalChangeDollar: (symbolFetch.price * opItem.quantity) - (opItem.averagePrice * opItem.quantity), //TODO: Change to cost basis once fixed?
+                                            totalChangePct: (((symbolFetch.price * opItem.quantity) - (opItem.averagePrice * opItem.quantity)) / (opItem.averagePrice * opItem.quantity)), //TODO: Change to cost basis once fixed?
                                         };
 
                                     }
@@ -649,7 +663,7 @@ export default function Component () {
                                                     style: "currency",
                                                     currency: "USD"
                                                 }).format(chartDefault.day_change_dollars / 100)}
-                                        </span> (<span className={classes([chartDefault.day_change_dollars > 0 ? "text-green-500" : "text-red-500", "font-light"])}>{chartDefault.day_change_dollars > 0 ? "+" : "-"}{chartDefault.day_change_percent}%</span>)
+                                        </span> (<span className={classes([chartDefault.day_change_dollars > 0 ? "text-green-500" : "text-red-500", "font-light"])}>{Intl.NumberFormat('en-US', { style: "percent" }).format(chartDefault.day_change_percent)}</span>)
                                         </div>
                                     </div>
                                 </div>
@@ -669,22 +683,23 @@ export default function Component () {
                                         Search Symbol
                                     </Button>
                                     <TradeModal symbState={tradeModalState}/>
-                                    <Button variant="outline" size="sm">
-                                        1D
-                                    </Button>
-                                    <Button variant="outline" size="sm">
-                                        1W
-                                    </Button>
-                                    <Button variant="outline" size="sm">
-                                        1M
-                                    </Button>
-                                    <Button variant="outline" size="sm">
-                                        1Y
-                                    </Button>
+                                    {/*<Button variant="outline" size="sm">*/}
+                                    {/*    1D*/}
+                                    {/*</Button>*/}
+                                    {/*<Button variant="outline" size="sm">*/}
+                                    {/*    1W*/}
+                                    {/*</Button>*/}
+                                    {/*<Button variant="outline" size="sm">*/}
+                                    {/*    1M*/}
+                                    {/*</Button>*/}
+                                    {/*<Button variant="outline" size="sm">*/}
+                                    {/*    1Y*/}
+                                    {/*</Button>*/}
                                 </div>
                             </div>
                             <div className="h-[400px] flex items-center justify-center">
-                                <div id={'mainChart'} className="h-full w-full"></div>
+                                {/*<div id={'mainChart'} className="h-full w-full"></div>*/}
+                                <CandlestickChart symbol={chartDefault.symbol}></CandlestickChart>
                             </div>
                         </div>
                         <div className="border shadow-sm rounded-lg overflow-hidden dark:border-white">

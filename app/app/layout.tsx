@@ -76,21 +76,20 @@ export default async function RootLayout ({
                     positionWatch.push({
                         id: position.id,
                         userId: position.userId,
-                        currentPrice: 0,  //TODO
+                        currentPrice: 0,
                         costBasis: (position.costBasis ? position.costBasis : 150000) / position.quantity,
-                        // averagePrice: position.averagePrice, //TODO: Change once averagePrice is using the new int strat
-                        averagePrice: (position.costBasis ? position.costBasis : 150000) / position.quantity,
+                        averagePrice: position.averagePrice,
                         quantity: position.quantity,
                         direction: position.direction,
                         orderId: position.orderId,
                         profitLoss: position.profitLoss,
                         symbol: position.symbol,
                         status: position.status,
-                        value: 0, //TODO
-                        dayChangePct: 5.23,
-                        dayChangeDollar: 10000,
-                        totalChangeDollar: 235400,
-                        totalChangePct: 20.45,
+                        value: 0,
+                        dayChangePct: 0,
+                        dayChangeDollar: 0,
+                        totalChangeDollar: 0,
+                        totalChangePct: 0,
                         createdAt: position.createdAt,
                         updatedAt: position.updatedAt,
                     });
@@ -146,6 +145,14 @@ export default async function RootLayout ({
                         lastPrice: symbolFetch.startingPrice,
                         dayChangeDollar: symbolFetch.priceChange,
                         dayChangePercent: symbolFetch.percentageChange,
+                        startingPrice: symbolFetch.startingPrice,
+                        yesterdayClose: symbolFetch.yesterdayClose,
+                        yesterdayOpen: symbolFetch.yesterdayOpen,
+                        yesterdayHigh: symbolFetch.yesterdayHigh,
+                        yesterdayLow: symbolFetch.yesterdayLow,
+                        todayOpen: symbolFetch.todayOpen,
+                        todayHigh: symbolFetch.todayHigh,
+                        todayLow: symbolFetch.todayLow,
                     });
 
                     positionWatch = positionWatch.map(pos => {
@@ -156,6 +163,10 @@ export default async function RootLayout ({
                                 ...pos,
                                 currentPrice: symbolFetch.price,
                                 value: symbolFetch.price * pos.quantity,
+                                dayChangePct: (((symbolFetch.price * pos.quantity) - (symbolFetch.yesterdayClose * pos.quantity)) / (symbolFetch.price * pos.quantity)),
+                                dayChangeDollar: (symbolFetch.price * pos.quantity) - (symbolFetch.yesterdayClose * pos.quantity),
+                                totalChangeDollar: (symbolFetch.price * pos.quantity) - (pos.averagePrice * pos.quantity), //TODO: Change to cost basis once fixed?
+                                totalChangePct: (((symbolFetch.price * pos.quantity) - (pos.averagePrice * pos.quantity)) / (pos.averagePrice * pos.quantity)), //TODO: Change to cost basis once fixed?
                             };
 
                         }

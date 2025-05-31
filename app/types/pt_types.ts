@@ -36,7 +36,15 @@ export interface chartDefault {
 export interface symbolState {
     current_price: number,
     price_change: number,
-    symbol: string | null
+    symbol: string | null,
+    startingPrice?: number,
+    yesterdayClose?: number,
+    yesterdayOpen?: number,
+    yesterdayHigh?: number,
+    yesterdayLow?: number,
+    todayOpen?: number,
+    todayHigh?: number,
+    todayLow?: number,
 }
 
 export interface tradeModalForm extends symbolState {

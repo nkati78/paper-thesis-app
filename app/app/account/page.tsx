@@ -89,17 +89,20 @@ export default function Account() {
                     }).then((res) => res.json());
 
                     if (orders.length > 0) {
+
                         
                         transactions = orders.map((order) => ({
                             id: orders.findIndex((order) => order.OrderID),
                             transaction_id: order.OrderID,
-                            date: new Date(order.Timestamp).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'numeric',
-                                day: 'numeric'
-                            }),
+                            date: (() => {
+
+                                const date = new Date(order.Timestamp);
+
+                                return `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1).toString().padStart(2, '0')}-${date.getUTCDate().toString().padStart(2, '0')}`;
+
+                            })(),
                             type: order.Side,
-                            status: order.Status, // TODO: Need to hash out possibilities of what is returned here. "Pending, Complete, Failed" are what the order history currently takes
+                            status: order.Status,
                             ticker: order.Symbol,
                             price: (order.Price / 100),
                             amount: order.Quantity

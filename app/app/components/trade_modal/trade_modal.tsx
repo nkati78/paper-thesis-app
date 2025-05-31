@@ -24,7 +24,7 @@ export default function TradeModal(props: { symbState: symbolState }) {
         order_type: 'market',
         quantity: 0,
         symbol: null,
-        total_cost: 0.00
+        total_cost: 0.00,
     });
 
     //Updating TradeState Hook
@@ -113,7 +113,7 @@ export default function TradeModal(props: { symbState: symbolState }) {
                         </div>
                         <div className="grid grid-cols-2 items-center gap-4">
                             <div className="text-sm text-muted-foreground">Price Change</div>
-                            <div className="text-2xl font-bold text-green-500 justify-self-end">{tradeState.price_change}%</div>
+                            <div className="text-2xl font-bold text-green-500 justify-self-end">{Intl.NumberFormat('en-US', { style: "percent" }).format(tradeState.price_change)}</div>
                         </div>
                         <div className="flex items-center justify-between">
                             <div className="text-sm text-muted-foreground">Action</div>

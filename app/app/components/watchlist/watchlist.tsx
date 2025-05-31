@@ -68,25 +68,20 @@ export default function Watchlist(props: {watchlistState:  dashboardWatchList[],
                     {sortedWatchlistState.map((stock) => (
                         <TableRow key={stock.ticker}>
                             <TableCell>{stock.ticker}</TableCell>
-                            <TableCell
-                                className={stock.dayChangePercent >= 0 ? "text-green-500" : "text-red-500"}>
-                                ${(stock.currentPrice / 100)}
+                            <TableCell className={stock.dayChangePercent >= 0 ? "text-green-500" : "text-red-500"}>
+                                {Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(stock.currentPrice / 100)}
                             </TableCell>
-                            <TableCell
-                                className={stock.dayChangePercent >= 0 ? "text-green-500" : "text-red-500"}>
-                                ${(stock.lastPrice / 100)}
+                            <TableCell className={stock.dayChangePercent >= 0 ? "text-green-500" : "text-red-500"}>
+                                {Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(stock.lastPrice / 100)}
                             </TableCell>
-                            <TableCell
-                                className={stock.dayChangePercent >= 0 ? "text-green-500" : "text-red-500"}>
-                                {stock.dayChangePercent}%
+                            <TableCell className={stock.dayChangePercent >= 0 ? "text-green-500" : "text-red-500"}>
+                                {Intl.NumberFormat('en-US', { style: "percent" }).format(stock.dayChangePercent)}
                             </TableCell>
-                            <TableCell
-                                className={stock.dayChangeAmount >= 0 ? "text-green-500" : "text-red-500"}>
+                            <TableCell className={stock.dayChangeAmount >= 0 ? "text-green-500" : "text-red-500"}>
                                 ${(stock.dayChangeAmount / 100)}
                             </TableCell>
                             <TableCell>
-                                <Button variant="ghost" size="icon"
-                                    onClick={() => removeFromWatchlist(stock.ticker.toUpperCase())}>
+                                <Button variant="ghost" size="icon" onClick={() => removeFromWatchlist(stock.ticker.toUpperCase())}>
                                     <TrashIcon className="h-4 w-4"/>
                                     <span className="sr-only">Remove from Watchlist</span>
                                 </Button>
