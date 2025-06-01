@@ -32,5 +32,7 @@ services:
   web:
     #    image: 730335203934.dkr.ecr.us-east-2.amazonaws.com/paper-thesis/pt-web:latest
     image: pt-web
+    environment:
+      AUTH_SECRET: "wUG6J/esy5QI/nQ4vGiIGwI2hVHUx/oXIrn9daYoXFE="
     ports:
       - "3000:3000"
