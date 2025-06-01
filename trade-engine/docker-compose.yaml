@@ -8,7 +8,8 @@ services:
     links:
       - postgres
     environment:
-      DATABASE_URL: postgres://user:pass@host.docker.internal:5432/db?sslmode=disable
+#      DATABASE_URL: postgres://user:pass@host.docker.internal:5432/db?sslmode=disable
+      DATABASE_URL: postgres://user:pass@postgres:5432/db?sslmode=disable
     depends_on:
       postgres:
         condition: service_healthy
