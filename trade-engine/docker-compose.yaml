@@ -35,5 +35,6 @@ services:
     image: pt-web
     environment:
       AUTH_SECRET: "wUG6J/esy5QI/nQ4vGiIGwI2hVHUx/oXIrn9daYoXFE="
+      NEXTAUTH_URL: "https://paperthesis.com"
     ports:
       - "3000:3000"
