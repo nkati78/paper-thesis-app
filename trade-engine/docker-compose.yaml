@@ -2,8 +2,9 @@
 version: "3"
 services:
   app:
-#    image: paper-thesis/trade-engine-dev:latest
-    image: paper-thesis/trade-engine
+    #    image: paper-thesis/trade-engine-dev:latest
+    #    image: paper-thesis/trade-engine
+    image: trade-engine
     links:
       - postgres
     environment:
@@ -28,8 +29,8 @@ services:
       timeout: 5s
       retries: 5
 
-  # web:
-#    image: 730335203934.dkr.ecr.us-east-2.amazonaws.com/paper-thesis/pt-web:latest
-#    image: pt-web:latest
-#    ports:
-#      - "3000:3000"
+  web:
+    #    image: 730335203934.dkr.ecr.us-east-2.amazonaws.com/paper-thesis/pt-web:latest
+    image: pt-web
+    ports:
+      - "3000:3000"
