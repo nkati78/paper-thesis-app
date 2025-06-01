@@ -17,8 +17,8 @@ import { ptLogin } from "../../../types/pt_types";
 
 export default function Login () {
 
-    const [ email, setEmail ] = useState<string>();
-    const [ password, setPassword ] = useState<string>();
+    const [ email, setEmail ] = useState<string>("");
+    const [ password, setPassword ] = useState<string>("");
     const [ error, setError ] = useState<string>('');
     const [ darkMode, setDarkMode ] = useState<boolean>(true);
 
@@ -28,11 +28,22 @@ export default function Login () {
 
             try {
 
-                await signIn('credentials', {
+                const login = await signIn('credentials', {
                     email: cred.email,
                     password: cred.password,
-                    type: cred.type
+                    type: cred.type,
+                    redirect: false
                 });
+
+
+                if (login?.error) {
+
+                    setError('Incorrect Email or Password');
+
+                } else if (login?.ok) {
+
+                    window.location.href = "/dashboard";
+                }
                 
             } catch (err) {
 
@@ -62,6 +73,7 @@ export default function Login () {
 
         }
 
+        setError("");
 
     };
 
@@ -77,10 +89,10 @@ export default function Login () {
                     <div className={classes(['text-black dark:text-white self-end text-2xl mb-5 font-thin'])}>
                         Log in
                     </div>
-                    {error ?
-                        (<div className={classes(['text-red-500'])}>{error}</div>)
-                        : ''}
                     <div className={classes['flex flex-row']}>
+                        {error ?
+                            (<div className={classes(['text-red-500', 'mb-3'])}>{error}</div>)
+                            : ''}
                         <Input
                             type={'text'} //TODO: Change this once we switch to actual email login
                             placeholder={'Enter your email'}
@@ -93,7 +105,7 @@ export default function Login () {
                             type={'password'}
                             placeholder={'Enter your password'}
                             id={'password'}
-                            className={classes(['mb-4 text-black dark:text-white'])}
+                            className={classes(['mb-4 text-black dark:text-white text-base sm:text-lg'])}
                             onChange={handleInputChange}
                             name={'password'}
                         />
@@ -114,14 +126,14 @@ export default function Login () {
                     <div className={classes(['h-0.5 w-40 self-center bg-black dark:bg-white'])}/>
                 </div>
                 <div className={classes(['grid justify-items-center'])}>
-                    <Button
-                        onClick={() => signIn('google', {
-                            callbackUrl: "/account"
-                        })}
-                        className={classes(['w-64 bg-black dark:bg-white text-white dark:text-black mb-4'])}
-                    >
-                        <FontAwesomeIcon icon={faGoogle} className={classes(['mr-4'])}/> Sign in with Google
-                    </Button>
+                    {/*<Button*/}
+                    {/*    onClick={() => signIn('google', {*/}
+                    {/*        callbackUrl: "/account"*/}
+                    {/*    })}*/}
+                    {/*    className={classes(['w-64 bg-black dark:bg-white text-white dark:text-black mb-4'])}*/}
+                    {/*>*/}
+                    {/*    <FontAwesomeIcon icon={faGoogle} className={classes(['mr-4'])}/> Sign in with Google*/}
+                    {/*</Button>*/}
                     {/*<Button className={classes(['w-64 bg-black dark:bg-white text-white dark:text-black'])}>*/}
                     {/*    <FontAwesomeIcon icon={faFacebook} className={classes(['mr-4'])}/> Sign in with Facebook*/}
                     {/*</Button>*/}

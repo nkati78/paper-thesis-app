@@ -6,7 +6,6 @@ import { Input } from "@/shadcn/input";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/shadcn/table";
 import { selectUser } from "@/redux/user/userSlice";
 import { useSelector } from "react-redux";
-import { ColorType, createChart } from "lightweight-charts";
 import { addPosition, selectAllPositions, updatePositionBySymbol } from "@/redux/positions/positionsSlice";
 import { addWatchlistSymbolById, selectWatchlist } from "@/redux/watchlist/watchlistSlice";
 import { selectSymbols } from "@/redux/symbols/symbolSlice";
@@ -20,10 +19,8 @@ import TradeModal from "../components/trade_modal/trade_modal";
 import { useAppDispatch } from "../../lib/redux/hooks";
 import Watchlist from "../components/watchlist/watchlist";
 import Positions from "../components/open_positions/open_positions";
-import CandlestickChart from "../components/candlestick_chart/candlestick_chart";
-
-// TODO: CANDLES SHOULD REPRESENT CHOSEN TIME INCREMENT 1m, 5m, 10m, 15m
-// TODO: ENTIRE CHART SHOULD HAVE A DATE RANGE TO CHOOSE FROM, by default the last trading day, 1m increments
+import EmptyContainerFiller from "../components/empty_container_filler/empty_container_filler";
+import DashboardChart from "../components/dashboard_chart/dashboard_chart";
 
 export default function Component () {
 
@@ -36,23 +33,23 @@ export default function Component () {
     const [ leaderboardView, setLeaderboardView ] = useState<boolean>(false);
     const [ openPositions, setOpenPositions ] = useState<positionState[]>(positions);
     const [ chartDefault, setChartDefault ] = useState<chartDefault>({
-        symbol: (positions[0].symbol ? positions[0].symbol : (reduxWatchlist[0].symbol ? reduxWatchlist[0].symbol : symbolsToWatch[0].symbol)),
-        current_price: (positions[0].symbol ? positions[0].currentPrice : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.price : symbolsToWatch[0].price)),
-        day_change_dollars: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangeDollar : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangeDollar : symbolsToWatch[0].dayChangeDollar)),
-        day_change_percent: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangePercent : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangePercent : symbolsToWatch[0].dayChangePercent))
+        symbol: (positions[0]?.symbol ? positions[0].symbol : (reduxWatchlist[0]?.symbol ? reduxWatchlist[0].symbol : symbolsToWatch[0].symbol)),
+        current_price: (positions[0]?.symbol ? positions[0].currentPrice : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.price : symbolsToWatch[0].price)),
+        day_change_dollars: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.dayChangeDollar : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangeDollar : symbolsToWatch[0].dayChangeDollar)),
+        day_change_percent: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.dayChangePercent : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangePercent : symbolsToWatch[0].dayChangePercent))
     });
     const [ tradeModalState, setTradeModalState ] = useState<symbolState>({
-        current_price: (positions[0].symbol ? positions[0].currentPrice : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.price : symbolsToWatch[0].price)),
-        price_change: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangePercent : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangePercent : symbolsToWatch[0].dayChangePercent)),
-        symbol: (positions[0].symbol ? positions[0].symbol : (reduxWatchlist[0].symbol ? reduxWatchlist[0].symbol : symbolsToWatch[0].symbol)),
-        startingPrice: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.startingPrice : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.startingPrice : symbolsToWatch[0].startingPrice)),
-        yesterdayClose: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayClose : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayClose : symbolsToWatch[0].yesterdayClose)),
-        yesterdayOpen: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayOpen : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayOpen : symbolsToWatch[0].yesterdayOpen)),
-        yesterdayHigh: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayHigh : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayHigh : symbolsToWatch[0].yesterdayHigh)),
-        yesterdayLow: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayLow : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayLow : symbolsToWatch[0].yesterdayLow)),
-        todayOpen: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayOpen : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayOpen : symbolsToWatch[0].todayOpen)),
-        todayHigh: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayHigh : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayHigh : symbolsToWatch[0].todayHigh)),
-        todayLow: (positions[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayLow : (reduxWatchlist[0].symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayLow : symbolsToWatch[0].todayLow)),
+        current_price: (positions[0]?.symbol ? positions[0].currentPrice : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.price : symbolsToWatch[0].price)),
+        price_change: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.dayChangePercent : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.dayChangePercent : symbolsToWatch[0].dayChangePercent)),
+        symbol: (positions[0]?.symbol ? positions[0].symbol : (reduxWatchlist[0]?.symbol ? reduxWatchlist[0].symbol : symbolsToWatch[0].symbol)),
+        startingPrice: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.startingPrice : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.startingPrice : symbolsToWatch[0].startingPrice)),
+        yesterdayClose: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.yesterdayClose : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayClose : symbolsToWatch[0].yesterdayClose)),
+        yesterdayOpen: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.yesterdayOpen : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayOpen : symbolsToWatch[0].yesterdayOpen)),
+        yesterdayHigh: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.yesterdayHigh : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayHigh : symbolsToWatch[0].yesterdayHigh)),
+        yesterdayLow: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.yesterdayLow : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.yesterdayLow : symbolsToWatch[0].yesterdayLow)),
+        todayOpen: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.todayOpen : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayOpen : symbolsToWatch[0].todayOpen)),
+        todayHigh: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.todayHigh : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayHigh : symbolsToWatch[0].todayHigh)),
+        todayLow: (positions[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === positions[0].symbol)!.todayLow : (reduxWatchlist[0]?.symbol ? symbolsToWatch.find((symbol) => symbol.symbol === reduxWatchlist[0].symbol)!.todayLow : symbolsToWatch[0].todayLow)),
     });
     const [ watchlist, setWatchlist ] = useState<dashboardWatchList[]>([]);
     const [ watchlistSearch, setWatchlistSearch ] = useState<string>('');
@@ -204,10 +201,6 @@ export default function Component () {
                 todayLow: checkSymbolsToWatch.todayLow,
             });
 
-            // candlestickSeries.update({
-            //     time: '2019-01-01', open: 110, high: 120, low: 100, close: 115
-            // });
-
         } else {
 
             const symbolFetch = await get_symbol(symbol);
@@ -271,13 +264,13 @@ export default function Component () {
             clearInterval(positionWatchIntervalRef.current);
         }
 
-        if (positions.length > 0) {
+        positionWatchIntervalRef.current = setInterval(async () => {
 
-            positionWatchIntervalRef.current = setInterval(async () => {
+            try {
 
-                try {
+                const positionFetch = await get_positions();
 
-                    const positionFetch = await get_positions();
+                if (positionFetch.positions.length > 0) {
 
                     for (let i = 0; i < positionFetch.positions.length; i++) {
 
@@ -289,7 +282,7 @@ export default function Component () {
                             id: position.id,
                             userId: position.userId,
                             currentPrice: position.currentPrice,
-                            costBasis: (position.costBasis ? position.costBasis : 150000) / position.quantity,
+                            costBasis: (position.costBasis ? position.costBasis : position.averagePrice) * position.quantity, // TODO: Change once costBasis is fixed
                             averagePrice: position.averagePrice,
                             quantity: position.quantity,
                             direction: position.direction,
@@ -384,6 +377,7 @@ export default function Component () {
                                     };
 
                                     return [...prevPositions, newPos];
+
                                 }
 
                                 return prevPositions;
@@ -423,15 +417,15 @@ export default function Component () {
 
                     }
 
-                } catch (err) {
-
-                    console.error(err, 'Error in position interval');
-
                 }
 
-            }, 1000);
+            } catch (err) {
 
-        }
+                console.error(err, 'Error in position interval');
+
+            }
+
+        }, 1000);
 
         previousPositionToWatchLength.current = positions.length;
 
@@ -478,12 +472,7 @@ export default function Component () {
 
             }
 
-        } else {
-
-            console.log("no watchlist");
-
         }
-
 
     }, [reduxWatchlist]);
 
@@ -491,7 +480,9 @@ export default function Component () {
     useEffect(() => {
 
         if (symbolWatchIntervalRef.current) {
+
             clearInterval(symbolWatchIntervalRef.current);
+
         }
 
         if (symbolsToWatch && symbolsToWatch.length > 0) {
@@ -614,7 +605,7 @@ export default function Component () {
 
                     } catch (err) {
 
-                        console.error(err, "Error updating symbols in symbol watch hook");
+                        console.error(err, "Error updating symbols in symbol watch hook", symbol.symbol, err);
 
                     }
 
@@ -645,10 +636,10 @@ export default function Component () {
                             <h1 className="text-2xl font-bold">Dashboard</h1>
                         </div>
                         <div className="border shadow-sm rounded-lg overflow-hidden dark:border-white">
-                            <div className="flex items-center justify-between bg-muted/40 px-6 py-4">
-                                <div className="flex flex-col gap-2">
+                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between bg-muted/40 px-6 py-4 gap-4">
+                                <div className="flex flex-col gap-2 w-full md:w-auto">
                                     <h2 className={classes(["text-lg font-semibold col-12"])}>{chartDefault.symbol}</h2>
-                                    <div className="flex col-12 items-center gap-2">
+                                    <div className="flex flex-col md:flex-row md:items-center gap-y-2 md:gap-x-4">
                                         <div className={classes(["text-md font-semibold"])}>Current <span className={classes([chartDefault.day_change_dollars > 0 ? "text-green-500" : "text-red-500", "font-light"])}>
                                             {Intl.NumberFormat('en-US',
                                                 {
@@ -656,7 +647,6 @@ export default function Component () {
                                                     currency: "USD"
                                                 }).format(chartDefault.current_price / 100)}</span>
                                         </div>
-                                        &nbsp;&nbsp;
                                         <div className={classes(["text-md font-semibold"])}>Day Change <span className={classes([chartDefault.day_change_dollars > 0 ? "text-green-500" : "text-red-500", "font-light"])}>
                                             {Intl.NumberFormat('en-US',
                                                 {
@@ -667,19 +657,19 @@ export default function Component () {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="relative flex-1">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full md:w-auto">
+                                    <div className="relative flex-1 w-full sm:w-auto">
                                         <SearchIcon
                                             className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
                                         <Input
                                             type="search"
                                             placeholder="Search..."
-                                            className="w-full rounded-lg bg-background pl-8 pr-4 py-2"
+                                            className="w-full rounded-lg bg-background pl-8 pr-4 py-2 text-base sm:text-lg"
                                             value={chartSearch}
                                             onChange={(e) => { setChartSearch(e.target.value.toUpperCase()); }}
                                         />
                                     </div>
-                                    <Button size="sm" onClick={() => updateChart(chartSearch)}>
+                                    <Button size="sm" className="w-full sm:w-auto" onClick={() => updateChart(chartSearch)}>
                                         Search Symbol
                                     </Button>
                                     <TradeModal symbState={tradeModalState}/>
@@ -697,16 +687,15 @@ export default function Component () {
                                     {/*</Button>*/}
                                 </div>
                             </div>
-                            <div className="h-[400px] flex items-center justify-center">
-                                {/*<div id={'mainChart'} className="h-full w-full"></div>*/}
-                                <CandlestickChart symbol={chartDefault.symbol}></CandlestickChart>
+                            <div className="h-[400px] sm:h-[400px] flex items-center justify-center">
+                                <DashboardChart symbol={chartDefault.symbol} />
                             </div>
                         </div>
-                        <div className="border shadow-sm rounded-lg overflow-hidden dark:border-white">
+                        <div className="border shadow-sm rounded-lg overflow-visible dark:border-white">
                             <div className="flex items-center justify-between bg-muted/40 px-6 py-4">
                                 <h2 className="text-lg font-semibold">Open Positions</h2>
                             </div>
-                            <Positions positionState={openPositions} />
+                            { openPositions.length > 0 ? <Positions positionState={openPositions} /> : <EmptyContainerFiller type={'positions'}/> }
                         </div>
                     </div>
                     <div className="bg-muted/40 p-6">
@@ -768,22 +757,22 @@ export default function Component () {
                             </Table>
                         </div>
                         <div className="border shadow-sm rounded-lg overflow-hidden mt-6 dark:border-white">
-                            <div className="flex items-center justify-between bg-muted/40 px-6 py-4">
+                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between bg-muted/40 px-6 py-4 gap-4">
                                 <h2 className="text-lg font-semibold">Watchlist</h2>
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
                                     <Input
                                         type="text"
                                         placeholder="Enter ticker"
-                                        className="w-full rounded-lg bg-background px-4 py-2"
+                                        className="w-full rounded-lg bg-background px-4 py-2 text-base sm:text-lg"
                                         value={watchlistSearch}
                                         onChange={(e) => { setWatchlistSearch(e.target.value.toUpperCase()); }}
                                     />
-                                    <Button size="sm" onClick={() => addToWatchlist(watchlistSearch)}>
+                                    <Button size="sm" className="w-full sm:w-auto" onClick={() => addToWatchlist(watchlistSearch)}>
                                         Add to Watchlist
                                     </Button>
                                 </div>
                             </div>
-                            <Watchlist watchlistState={watchlist} setWatchListState={setWatchlist} />
+                            { watchlist.length > 0 ? <Watchlist watchlistState={watchlist} setWatchListState={setWatchlist} /> : <EmptyContainerFiller type={'watchlist'}/> }
                         </div>
                     </div>
                 </main>

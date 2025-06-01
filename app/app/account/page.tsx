@@ -16,6 +16,7 @@ import { PTTransaction } from "../../types/pt_types";
 import { PasswordReset } from "../components/modals/password_reset";
 import settings from "../../lib/settings";
 import { Order } from "../../types/api_types";
+import EmptyContainerFiller from "../components/empty_container_filler/empty_container_filler";
 
 // TODO: Look at potential live updates for open orders
 // TODO: Make sure orders is properly updating with the right data and reflecting changes properly
@@ -273,6 +274,7 @@ export default function Account() {
                                                 disabled={!editInfo}
                                                 value={userFormInfo.fn}
                                                 onChange={handleInputChange}
+                                                className={'text-base sm:text-lg'}
                                             />
                                         </div>
                                         <div className="space-y-2 max-w-md">
@@ -283,6 +285,7 @@ export default function Account() {
                                                 disabled={!editInfo}
                                                 value={userFormInfo.ln}
                                                 onChange={handleInputChange}
+                                                className={'text-base sm:text-lg'}
                                             />
                                         </div>
                                         <div className="space-y-2 max-w-md">
@@ -293,6 +296,7 @@ export default function Account() {
                                                 disabled={!editInfo}
                                                 value={userFormInfo.username}
                                                 onChange={handleInputChange}
+                                                className={'text-base sm:text-lg'}
                                             />
                                         </div>
                                         <div className="space-y-2 max-w-md">
@@ -303,6 +307,7 @@ export default function Account() {
                                                 disabled={!editInfo}
                                                 value={userFormInfo.email}
                                                 onChange={handleInputChange}
+                                                className={'text-base sm:text-lg'}
                                             />
                                         </div>
                                     </div>
@@ -364,9 +369,11 @@ export default function Account() {
                         </div>
                     </section>
                     <section className="w-full mt-10">
-                        <Transactions
-                            transactions={transactionState}
-                        />
+                        <div className="flex flex-col gap-6 mx-auto w-full  bg-background text-foreground ">
+                            <h1 className="text-3xl font-bold">Order History</h1>
+                            {transactionState.length > 0 ? <Transactions transactions={transactionState}/> :
+                                <EmptyContainerFiller type={'transactions'}/>}
+                        </div>
                     </section>
                     <section className={"mt-10"}>
                         <h2 className="text-2xl font-bold">Contact Us</h2>
@@ -381,6 +388,7 @@ export default function Account() {
                                         id="name"
                                         value={user.fn + ' ' + user.ln}
                                         onChange={handleInputChange}
+                                        className={'text-base sm:text-lg'}
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -390,6 +398,7 @@ export default function Account() {
                                         type="email"
                                         value={user.email}
                                         onChange={handleInputChange}
+                                        className={'text-base sm:text-lg'}
                                     />
                                 </div>
                             </div>

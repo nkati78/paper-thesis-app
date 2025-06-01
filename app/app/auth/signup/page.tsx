@@ -37,14 +37,25 @@ export default function Login () {
 
             try {
 
-                await signIn('credentials', {
+                const signUp = await signIn('credentials', {
                     email: acc.email ,
                     password: acc.password ,
                     username: acc.username,
                     firstName: acc.firstName ,
                     lastName: acc.lastName,
-                    type: 'register'
+                    type: 'register',
+                    redirect: false
                 });
+
+                if (signUp?.error) {
+
+                    setError('Account with that email already exists!');
+
+                } else if (signUp?.ok) {
+
+                    window.location.href = "/dashboard";
+
+                }
 
             } catch (err) {
 
@@ -152,7 +163,7 @@ export default function Login () {
                             placeholder={createInfo.username}
                             id={'username'}
                             onChange={handleInputChange}
-                            className={classes(['mb-4 text-black dark:text-white placeholder:italic'])}
+                            className={classes(['mb-4 text-black dark:text-white placeholder:italic text-base sm:text-lg'])}
                         />
                     </div>
                     <div>
@@ -162,7 +173,7 @@ export default function Login () {
                             placeholder={createInfo.email}
                             onChange={handleInputChange}
                             id={'email'}
-                            className={classes(['mb-4 text-black dark:text-white placeholder:italic'])}
+                            className={classes(['mb-4 text-black dark:text-white placeholder:italic text-base sm:text-lg'])}
                         />
                     </div>
                     <div className={classes([''])}>
@@ -172,7 +183,7 @@ export default function Login () {
                             placeholder={createInfo.firstName}
                             onChange={handleInputChange}
                             id={'firstName'}
-                            className={classes(['mb-4 text-black dark:text-white placeholder:italic'])}
+                            className={classes(['mb-4 text-black dark:text-white placeholder:italic text-base sm:text-lg'])}
                         />
                     </div>
                     <div>
@@ -182,7 +193,7 @@ export default function Login () {
                             placeholder={createInfo.lastName}
                             onChange={handleInputChange}
                             id={'lastName'}
-                            className={classes(['mb-4 text-black dark:text-white placeholder:italic'])}
+                            className={classes(['mb-4 text-black dark:text-white placeholder:italic text-base sm:text-lg'])}
                         />
                     </div>
                     <div className={classes([''])}>
@@ -192,7 +203,7 @@ export default function Login () {
                             placeholder={''}
                             onChange={handleInputChange}
                             id={'password'}
-                            className={classes(['mb-4 text-black dark:text-white placeholder:italic'])}
+                            className={classes(['mb-4 text-black dark:text-white placeholder:italic text-base sm:text-lg'])}
                         />
                     </div>
                     <div className={classes(['flex justify-center'])}>

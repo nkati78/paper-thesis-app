@@ -101,10 +101,9 @@ export default function Transactions(props: { transactions: PTTransaction[] }) {
     }, [filteredTransactions]);
 
     return (
-        <div className="flex flex-col gap-6 mx-auto w-full  bg-background text-foreground ">
-            <h1 className="text-3xl font-bold">Order History</h1>
+        <>
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-2 md:gap-4">
                     <DatePickerWithRange
                         className={undefined}
                         date={dateFilter}
@@ -113,7 +112,7 @@ export default function Transactions(props: { transactions: PTTransaction[] }) {
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline">
-                                <FilterIcon className="w-4 h-4 mr-2" />
+                                <FilterIcon className="w-4 h-4 mr-2"/>
                                 {filters.type === "all" ? "All" : filters.type}
                             </Button>
                         </DropdownMenuTrigger>
@@ -131,7 +130,7 @@ export default function Transactions(props: { transactions: PTTransaction[] }) {
                     <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline">
-                                <FilterIcon className="w-4 h-4 mr-2" />
+                                <FilterIcon className="w-4 h-4 mr-2"/>
                                 {filters.ticker === "all" ? "All Tickers" : filters.ticker}
                             </Button>
                         </DropdownMenuTrigger>
@@ -165,7 +164,8 @@ export default function Transactions(props: { transactions: PTTransaction[] }) {
                                 }}
                             >
                                 Date
-                                {sortColumn === "date" && <span className="ml-2">{sortDirection === "asc" ? "\u2191" : "\u2193"}</span>}
+                                {sortColumn === "date" &&
+                                    <span className="ml-2">{sortDirection === "asc" ? "\u2191" : "\u2193"}</span>}
                             </TableHead>
                             <TableHead
                                 className="cursor-pointer"
@@ -179,7 +179,8 @@ export default function Transactions(props: { transactions: PTTransaction[] }) {
                                 }}
                             >
                                 Buy/Sell
-                                {sortColumn === "type" && <span className="ml-2">{sortDirection === "asc" ? "\u2191" : "\u2193"}</span>}
+                                {sortColumn === "type" &&
+                                    <span className="ml-2">{sortDirection === "asc" ? "\u2191" : "\u2193"}</span>}
                             </TableHead>
                             <TableHead
                                 className="cursor-pointer"
@@ -238,7 +239,8 @@ export default function Transactions(props: { transactions: PTTransaction[] }) {
                             <TableRow key={transaction.id}>
                                 <TableCell>{transaction.date}</TableCell>
                                 <TableCell>
-                                    <Badge variant={transaction.type === "buy" ? "secondary" : "outline"}>{transaction.type === 'buy' || transaction.type === "" ? 'buy' : transaction.type}</Badge>
+                                    <Badge
+                                        variant={transaction.type === "buy" ? "secondary" : "outline"}>{transaction.type === 'buy' || transaction.type === "" ? 'buy' : transaction.type}</Badge>
                                     {/*<Badge variant={"secondary"}>buy</Badge>*/}
                                 </TableCell>
                                 <TableCell>
@@ -263,7 +265,8 @@ export default function Transactions(props: { transactions: PTTransaction[] }) {
                                 <TableCell className="text-right">{transaction.amount}</TableCell>
                                 <TableCell>{transaction.ticker}</TableCell>
                                 <TableCell className="text-right">${transaction.price.toFixed(2)}</TableCell>
-                                <TableCell className={`text-right ${transaction.type === "buy" || transaction.type === "" ? "text-red-500" : "text-green-500"}`}>
+                                <TableCell
+                                    className={`text-right ${transaction.type === "buy" || transaction.type === "" ? "text-red-500" : "text-green-500"}`}>
                                     ${(transaction.price * transaction.amount).toFixed(2)}
                                 </TableCell>
                             </TableRow>
@@ -274,26 +277,27 @@ export default function Transactions(props: { transactions: PTTransaction[] }) {
             <div className="flex items-center justify-between">
                 <div className="grid gap-1">
                     <div className="flex items-center gap-2">
-                        <ArrowUpIcon className="w-4 h-4 fill-green-500" />
+                        <ArrowUpIcon className="w-4 h-4 fill-green-500"/>
                         <span className="font-medium">Total Gains: ${totalGains.toFixed(2)}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <ArrowDownIcon className="w-4 h-4 fill-red-500" />
+                        <ArrowDownIcon className="w-4 h-4 fill-red-500"/>
                         <span className="font-medium">Total Losses: ${totalLosses.toFixed(2)}</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className={`font-medium ${totalGains - totalLosses >= 0 ? "text-green-500" : "text-red-500"}`}>
+                    <span
+                        className={`font-medium ${totalGains - totalLosses >= 0 ? "text-green-500" : "text-red-500"}`}>
             Net: ${(totalGains - totalLosses).toFixed(2)}
                     </span>
                     {totalGains - totalLosses >= 0 ? (
-                        <ArrowUpIcon className="w-4 h-4 fill-green-500" />
+                        <ArrowUpIcon className="w-4 h-4 fill-green-500"/>
                     ) : (
-                        <ArrowDownIcon className="w-4 h-4 fill-red-500" />
+                        <ArrowDownIcon className="w-4 h-4 fill-red-500"/>
                     )}
                 </div>
             </div>
-        </div>
+        </>
     );
 
 }

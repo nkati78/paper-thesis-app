@@ -31,7 +31,7 @@ export default function Positions(props: {positionState:  positionState[] }) {
                             <TableCell>{position.symbol}</TableCell>
                             <TableCell className={position.dayChangeDollar >= 0 ? "text-green-500" : "text-red-500"}>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format((position.currentPrice / 100))}</TableCell>
                             <TableCell>{position.quantity}</TableCell>
-                            <TableCell>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.costBasis / 100)}</TableCell>
+                            <TableCell>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format((position.costBasis) / 100)}</TableCell>
                             <TableCell>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.averagePrice / 100)}</TableCell>
                             <TableCell className={position.totalChangeDollar >= 0 ? "text-green-500" : "text-red-500"}>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.value / 100)}</TableCell>
                             <TableCell className={position.dayChangeDollar >= 0 ? "text-green-500" : "text-red-500"}>{Intl.NumberFormat('en-US', { style: "currency",  currency: "USD" }).format(position.dayChangeDollar / 100)}</TableCell>

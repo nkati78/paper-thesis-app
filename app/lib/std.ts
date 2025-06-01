@@ -6,10 +6,45 @@ export function classes (classes: string[]) {
 
 }
 
-export function subtract_days (time: string, days: number) {
+export function normalizeTimestamp(timestamp: string): string {
+
+    const match = timestamp.match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})(?:\.(\d+))?(?:\s([+-]\d{4})(?:\sUTC)?)?$/);
+
+    if (!match) {
+
+        console.error("Timestamp does not match expected format:", timestamp);
+
+        return '';
+
+    }
+
+    const [_, date, time, fractionalSeconds = '000', timezone] = match;
+
+    const milliseconds = fractionalSeconds.substring(0, 3);
+
+    const formattedTimezone = timezone
+        ? timezone.slice(0, 3) + ':' + timezone.slice(3)
+        : 'Z';
+
+    const isoTimestamp = `${date}T${time}.${milliseconds}${formattedTimezone}`;
+
+    return isoTimestamp;
+
+}
+
+export function subtract_days(time: string | number, days: number): string {
 
     const date = new Date(time);
-    date.setDate(date.getDate() - days);
+
+    if (isNaN(date.getTime())) {
+
+        console.error("Invalid date provided to subtract_days:", time);
+
+        return '';
+
+    }
+
+    date.setUTCDate(date.getUTCDate() - days);
 
     return date.toISOString().split('T')[0];
 

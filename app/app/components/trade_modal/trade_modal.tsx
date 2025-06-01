@@ -90,7 +90,7 @@ export default function TradeModal(props: { symbState: symbolState }) {
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline">Trade</Button>
+                    <Button variant="outline" className="w-full sm:w-auto">Trade</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
@@ -113,7 +113,7 @@ export default function TradeModal(props: { symbState: symbolState }) {
                         </div>
                         <div className="grid grid-cols-2 items-center gap-4">
                             <div className="text-sm text-muted-foreground">Price Change</div>
-                            <div className="text-2xl font-bold text-green-500 justify-self-end">{Intl.NumberFormat('en-US', { style: "percent" }).format(tradeState.price_change)}</div>
+                            <div className={classes(['text-2xl font-bold  justify-self-end', tradeState.price_change > 0 ? 'text-green-500' : 'text-red-500'])}>{Intl.NumberFormat('en-US', { style: "percent" }).format(tradeState.price_change)}</div>
                         </div>
                         <div className="flex items-center justify-between">
                             <div className="text-sm text-muted-foreground">Action</div>
@@ -160,7 +160,7 @@ export default function TradeModal(props: { symbState: symbolState }) {
                                 <Input
                                     type="number"
                                     placeholder="Enter quantity"
-                                    className="w-[150px] text-foreground justify-self-end"
+                                    className="w-[150px] text-foreground justify-self-end text-base sm:text-lg"
                                     onChange={handleChange}
                                 />
                             </div>

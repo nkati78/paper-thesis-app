@@ -35,7 +35,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
                 if (user_fetch.token) {
 
-                    user = {
+                    return {
                         user_id: user_fetch.user.id,
                         username: user_fetch.user.username,
                         email: user_fetch.user.email,
@@ -49,10 +49,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                 } else if (user_fetch.message) {
 
                     throw new Error(user_fetch.message);
-
-                } else {
-
-                    user = null;
 
                 }
 
@@ -80,6 +76,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
                     user = user_fetch.user;
                     user.token = user_fetch.token;
+                    
+                    return user;
 
                 } else if (user_fetch.message) {
 
@@ -95,7 +93,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
             }
 
-            return user;
+            return null;
 
         }
 
@@ -118,7 +116,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
         async redirect({ url, baseUrl }) {
 
-            return url ? url : baseUrl;
+            return url.startsWith(baseUrl) ? url : baseUrl;
 
         },
 

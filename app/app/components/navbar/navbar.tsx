@@ -74,12 +74,12 @@ export default function Navbar () {
                     {/*    darkMode ? <TransparentLogo/> : <TransparentLogoDark/>*/}
                     {/*}*/}
                 </div>
-                <Link href={"/account"}>
+                <Link href={"/account"} className="hidden md:block">
                     <Badge variant={"default"}>
                         Account
                     </Badge>
                 </Link>
-                <Link href={"/dashboard"}>
+                <Link href={"/dashboard"} className="hidden md:block">
                     <Badge variant={"default"}>
                         Dashboard
                     </Badge>

@@ -9,7 +9,12 @@ import settings from "../lib/settings";
 import { positionState, symbolWatchState } from "../types/redux_types";
 import Script from "next/script";
 
-// TODO: FIX POSITIONS PULL ONCE ENDPOINT IS SHOWING PROPER DATA
+export const metadata = {
+    title: 'Paper Thesis',
+    description: 'The only margin call here is your ego',
+    viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no',
+};
+
 
 export default async function RootLayout ({
     children
@@ -77,7 +82,7 @@ export default async function RootLayout ({
                         id: position.id,
                         userId: position.userId,
                         currentPrice: 0,
-                        costBasis: (position.costBasis ? position.costBasis : 150000) / position.quantity,
+                        costBasis: (position.costBasis ? position.costBasis : position.averagePrice) * position.quantity, //TODO: Change once costBasis is fixed
                         averagePrice: position.averagePrice,
                         quantity: position.quantity,
                         direction: position.direction,

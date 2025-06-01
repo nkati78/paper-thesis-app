@@ -43,4 +43,18 @@ INSERT
 orders 
     (id, price, quantity, side, type, symbol, user_id, status, created_at) 
 values 
-    ('00dbe482-1642-4c44-a518-f9a4d0df8a44', 10000, 10, 'buy', 'market', 'AAPL', 'f9db6ee0-957d-420e-b3a6-e52613cb63c5', 'filled', '2025-05-11 02:14:42.531863+00:00');
+    ('00dbe482-1642-4c44-a518-f9a4d0df8a44', 20111, 10, 'buy', 'market', 'AAPL', 'f9db6ee0-957d-420e-b3a6-e52613cb63c5', 'filled', '2025-05-11 02:14:42.531863+00:00');
+
+INSERT
+into
+    orders
+(id, price, quantity, side, type, symbol, user_id, status, created_at)
+values
+    ('00dbe482-1642-4c44-a518-f9a4d0df8a23', 20566, 12, 'buy', 'market', 'IBM', 'f9db6ee0-957d-420e-b3a6-e52613cb63c5', 'filled', '2025-05-10 02:14:42.531863+00:00');
+
+INSERT
+into
+    orders
+(id, price, quantity, side, type, symbol, user_id, status, created_at)
+values
+    ('00dbe482-1642-4c44-a518-f9a4d0df8a21', 17264, 29, 'sell', 'market', 'GOOGL', 'f9db6ee0-957d-420e-b3a6-e52613cb63c5', 'closed', '2025-05-19 02:14:42.531863+00:00');
