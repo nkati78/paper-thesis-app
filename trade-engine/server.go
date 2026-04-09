@@ -20,7 +20,7 @@ func StartServer(orderService orders.OrderService, userService users.UserService
 	auth := security.NewAuth([]byte("1337-secret"))
 
 	orderHandler := handlers.NewOrderHandler(orderService)
-	userHandler := handlers.NewUserHandler(userService, auth)
+	userHandler := handlers.NewUserHandler(userService, orderService, auth)
 	marketDataHandler := handlers.NewMarketDataHandler(marketDataService)
 
 	// Start the server
@@ -51,6 +51,7 @@ func StartServer(orderService orders.OrderService, userService users.UserService
 	userRouter.GET("/balance", handlers.ToHandler(userHandler.GetBalance))
 	userRouter.GET("/watchlist", handlers.ToHandler(userHandler.GetUserWatchList))
 	userRouter.POST("/watchlist", handlers.ToHandler(userHandler.AddSymbolWatchList))
+	userRouter.DELETE("/watchlist", handlers.ToHandler(userHandler.RemoveSymbolWatchList))
 
 	router.POST("/register", handlers.ToHandler(userHandler.CreateUser))
 	router.POST("/login", handlers.ToHandler(userHandler.Login))
@@ -60,7 +61,7 @@ func StartServer(orderService orders.OrderService, userService users.UserService
 		Handler: router,
 	}
 
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 
 	go func() {

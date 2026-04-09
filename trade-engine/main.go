@@ -40,8 +40,11 @@ func run() int {
 		fmt.Print(err)
 	}
 
+	userProvider := userData.NewDataProvider(database)
+	userService := users.NewUserService(userProvider)
+
 	orderProvider := data.NewDataProvider(database)
-	orderService := orders.NewOrderService(orderProvider)
+	orderService := orders.NewOrderService(orderProvider, userService)
 
 	marketDataService := marketdata.NewMarketDataService(feedData.NewDataProvider(database))
 	marketDataWorker := marketdata.NewWorker(marketDataService, orderService)
@@ -49,10 +52,6 @@ func run() int {
 	go func() {
 		marketDataWorker.Start()
 	}()
-
-	userProvider := userData.NewDataProvider(database)
-
-	userService := users.NewUserService(userProvider)
 
 	/*
 		go func() {

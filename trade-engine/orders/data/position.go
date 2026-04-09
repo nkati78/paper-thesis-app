@@ -11,10 +11,10 @@ type Position struct {
 	bun.BaseModel `bun:"table:positions,alias:p"`
 
 	ID         string `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
-	AvgPrice   int64  `bun:"average_price"`
+	AvgPrice   uint64 `bun:"average_price"`
 	Quantity   uint32 `bun:"quantity"`
 	Direction  string `bun:"direction"`
-	ProfitLoss uint64 `bun:"profit_loss"`
+	ProfitLoss int64  `bun:"profit_loss"`
 	Symbol     string `bun:"symbol"`
 	UserID     string `bun:"user_id"`
 	OrderID    string `bun:"order_id"`
@@ -63,7 +63,7 @@ func (dp DataProvider) UpdatePositionByOrderID(ctx context.Context, position Pos
 	return &position, nil
 }
 
-func (dp DataProvider) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice int64) error {
+func (dp DataProvider) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice uint64) error {
 	_, err := dp.db.NewUpdate().Model((*Position)(nil)).Set("profit_loss = ABS((? - average_price) * quantity)", newPrice).Where("symbol = ?", symbol).Exec(ctx)
 	if err != nil {
 		return err

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  box-sizing: border-box;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -32,7 +36,7 @@
   }
 
   .dark {
-    --background: 0, 0%, 27%;
+    --background: 0, 0%, 0%;
     --foreground: 60 5% 90%;
     --primary: 240 0% 90%;
     --primary-foreground: 60 0% 0%;
@@ -60,7 +64,45 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply antialiased bg-background text-foreground scroll-smooth;
   }
+
+  ::selection {
+    @apply bg-primary text-background;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-muted-foreground;
+  }
+
+  input:-webkit-autofill,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
+    box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  }
+
+  html {
+    overflow-y: scroll;
+  }
+
+}
+
+/*body {*/
+/*  scrollbar-gutter: stable;*/
+/*}*/
+
+.no-hover:hover {
+  background-color: inherit !important;
 }

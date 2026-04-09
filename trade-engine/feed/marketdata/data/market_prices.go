@@ -10,10 +10,18 @@ import (
 type MarketPrice struct {
 	bun.BaseModel `bun:"table:market_prices,alias:mp"`
 
-	ID        string    `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
-	Symbol    string    `bun:"symbol"`
-	Price     int64     `bun:"price"`
-	UpdatedAt time.Time `bun:"updated_at"`
+	ID             string    `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
+	Symbol         string    `bun:"symbol"`
+	Price          uint64    `bun:"price"`
+	StartingPrice  uint64    `bun:"starting_price"`
+	TradeDate      string    `bun:"trade_date,omitzero"`
+	TodayHigh      uint64    `bun:"today_high"`
+	TodayLow       uint64    `bun:"today_low"`
+	YesterdayClose uint64    `bun:"yesterday_close"`
+	YesterdayOpen  uint64    `bun:"yesterday_open"`
+	YesterdayHigh  uint64    `bun:"yesterday_high"`
+	YesterdayLow   uint64    `bun:"yesterday_low"`
+	UpdatedAt      time.Time `bun:"updated_at"`
 
 	ReferenceID string `bun:"reference_id"`
 }

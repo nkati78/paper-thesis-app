@@ -54,3 +54,12 @@ func (dp DataProvider) AddWatchListSymbol(ctx context.Context, watchList WatchLi
 
 	return &watchList, nil
 }
+
+func (dp DataProvider) DeleteWatchList(ctx context.Context, id string) error {
+	_, err := dp.db.NewDelete().Model((*WatchList)(nil)).Where("id = ?", id).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

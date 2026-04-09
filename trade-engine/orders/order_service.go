@@ -7,10 +7,12 @@ import (
 	"time"
 
 	"github.com/paper-thesis/trade-engine/orders/data"
+	"github.com/paper-thesis/trade-engine/users"
+	userData "github.com/paper-thesis/trade-engine/users"
 )
 
 type OrderRequest struct {
-	Price    int64  `json:"price"`
+	Price    uint64 `json:"price"`
 	Quantity uint32 `json:"quantity"`
 	Side     string `json:"side"`
 	Type     string `json:"type"`
@@ -18,22 +20,29 @@ type OrderRequest struct {
 }
 
 type OrderResponse struct {
-	OrderID string `json:"order_id"`
+	OrderID   string `json:"order_id"`
+	Timestamp string `json:"timestamp"`
 }
 
-func NewOrderService(dal data.OrderProvider) OrderService {
+func NewOrderService(dal data.OrderProvider, userService users.UserService) OrderService {
 	return OrderService{
-		dal: dal,
+		dal:         dal,
+		userService: userService,
 	}
 }
 
 type OrderService struct {
-	dal data.OrderProvider
+	dal         data.OrderProvider
+	userService userData.UserService
 }
 
 func (os OrderService) CreateOrder(ctx context.Context, userID string, orderRequest OrderRequest) (*OrderResponse, error) {
 	if len(userID) == 0 {
 		return nil, errors.New("user is not authenticated")
+	}
+
+	if orderRequest.Type == "" {
+		return nil, errors.New("order type is required")
 	}
 
 	order := NewOrder(
@@ -53,15 +62,13 @@ func (os OrderService) CreateOrder(ctx context.Context, userID string, orderRequ
 	fmt.Println("Order book updated: ", orderBooks)
 
 	orderDB := order.ToDB()
-	orderDB.CreatedAt = time.Now().UTC()
-	orderDB.UpdatedAt = time.Now().UTC()
 
-	createdOrder, err := os.dal.CreateOrder(ctx, order.ToDB())
+	createdOrder, err := os.dal.CreateOrder(ctx, orderDB)
 	if err != nil {
 		return nil, err
 	}
 
-	return &OrderResponse{OrderID: createdOrder.ID}, nil
+	return &OrderResponse{OrderID: createdOrder.ID, Timestamp: createdOrder.CreatedAt.Format("2006-01-02T15:04:05")}, nil
 }
 
 func (os OrderService) GetOrderBook(symbol string) OrderBook {
@@ -104,9 +111,9 @@ func (os OrderService) CancelOrder(orderID string) {
 	}
 }
 
-func (os OrderService) FillOrder(ctx context.Context, order *Order, price int64) error {
+func (os OrderService) FillOrder(ctx context.Context, order *Order, price uint64) error {
 	order.Filled = true
-	order.FilledTime = time.Now().UTC()
+	order.FilledTime = time.Now()
 	order.Status = Filled
 
 	order.Price = price
@@ -125,8 +132,8 @@ func (os OrderService) FillOrder(ctx context.Context, order *Order, price int64)
 		OrderID:    order.OrderID,
 		Status:     string(Open),
 		AvgPrice:   price,
-		CreatedAt:  time.Now().UTC(),
-		UpdatedAt:  time.Now().UTC(),
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
 	}
 
 	_, err = os.dal.CreatePosition(ctx, position)
@@ -136,16 +143,34 @@ func (os OrderService) FillOrder(ctx context.Context, order *Order, price int64)
 
 	OrderBookRemove(orderBooks[order.Symbol], order.OrderID)
 
+	//TODO: Where I am currently working Josh
+	//balance, err := os.ud.GetUserBalance(ctx, order.UserID)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//fmt.Println(balance)
+	//fmt.Println("ron")
+	//
+	//totalCost := float64(order.Quantity) * float64(price)
+	//balance.Balance -= totalCost
+	//
+	//_, err = os.bd.UpdateUserBalance(ctx, order.UserID, *balance)
+	//if err != nil {
+	//	return err
+	//}
+
 	return nil
 }
 
-func (os OrderService) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice int64) error {
+func (os OrderService) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice uint64) error {
 	return os.dal.UpdatePositionsBySymbol(ctx, symbol, newPrice)
 }
 
 func (os OrderService) GetPositionsByUserID(ctx context.Context, userID string) ([]*Position, error) {
 	positions, err := os.dal.GetUserPositions(ctx, userID)
 	if err != nil {
+		fmt.Println("Error getting user positions: ", err)
 		return nil, err
 	}
 

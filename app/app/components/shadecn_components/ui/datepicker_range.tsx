@@ -1,10 +1,7 @@
-// "use client";
-
 import * as React from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { DateRange, SelectRangeEventHandler } from "react-day-picker";
-
 import { cn } from "../lib/utils";
 import { Button } from "@/shadcn/button";
 import { Calendar } from "@/shadcn/calendar";
@@ -33,7 +30,7 @@ export function DatePickerWithRange({
                         id="date"
                         variant={"outline"}
                         className={cn(
-                            "w-[300px] justify-start text-left font-normal",
+                            "max-w-md justify-start text-left font-normal",
                             !date && "text-muted-foreground"
                         )}
                     >

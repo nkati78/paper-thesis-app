@@ -7,10 +7,20 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/shadcn/*": ["app/components/shadecn_components/ui/*"],
-      "@/redux/*": ["lib/redux/features/*"],
-      "@/shadcn_svg/*": ["app/components/shadcn_svgs/*"]
+      "@/shadcn/*": [
+        "app/components/shadecn_components/ui/*"
+      ],
+      "@/redux/*": [
+        "lib/redux/features/*"
+      ],
+      "@/shadcn_svg/*": [
+        "app/components/shadcn_svgs/*"
+      ]
     },
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -31,9 +41,10 @@
   },
   "include": [
     "next-env.d.ts",
-    ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "types",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

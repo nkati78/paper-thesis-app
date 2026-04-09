@@ -8,9 +8,7 @@ export default function AccountLayout ({
 
     return (
         <div>
-
             {children}
-
         </div>
     );
 
