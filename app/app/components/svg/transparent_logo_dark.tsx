@@ -4,8 +4,8 @@ import { SVGProps, useEffect, useState } from "react";
 
 export default function TransparentLogoDark (props: SVGProps<never>) {
 
-    const [width, set_width] = useState<number>(1100);
-    const [height, set_height] = useState<number>(200);
+    const [ width, set_width ] = useState<number>(1100);
+    const [ height, set_height ] = useState<number>(200);
 
     useEffect(() => {
 

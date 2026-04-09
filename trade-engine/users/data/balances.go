@@ -42,8 +42,9 @@ func (dp DataProvider) CreateBalance(ctx context.Context, userID string) (*Balan
 	return &balance, nil
 }
 
-func (dp DataProvider) UpdateUserBalance(ctx context.Context, balance Balance) (*Balance, error) {
-	_, err := dp.db.NewUpdate().Model(&balance).Where("user_id = ?").Exec(ctx)
+// TODO: Josh, added userID here for balance update
+func (dp DataProvider) UpdateUserBalance(ctx context.Context, userID string, balance Balance) (*Balance, error) {
+	_, err := dp.db.NewUpdate().Model(&balance).Where("user_id = ?", userID).Exec(ctx)
 	if err != nil {
 		return nil, err
 	}

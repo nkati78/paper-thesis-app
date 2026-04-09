@@ -7,3 +7,10 @@ type User struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 }
+
+type WatchList struct {
+	ID             string `json:"id"`
+	UserID         string `json:"userId"`
+	Symbol         string `json:"symbol"`
+	SequenceNumber int    `json:"sequenceNumber"`
+}

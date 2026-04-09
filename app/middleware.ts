@@ -22,6 +22,4 @@ export default auth((req) => {
 
     }
 
-    //TODO: Add middleware to auto redirect
-
 });

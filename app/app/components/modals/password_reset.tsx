@@ -3,7 +3,6 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -11,14 +10,12 @@ import {
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/shadcn/form";
 import { Input } from "@/shadcn/input";
-import { Label } from "@/shadcn/label";
 import { classes } from "../../../lib/std";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -67,7 +64,6 @@ export function PasswordReset() {
         try {
 
             // TODO: HOOK UP API ENDPOINT FOR PASSWORD CHANGE
-            console.log(values);
             set_open(false);
 
         } catch (err) {

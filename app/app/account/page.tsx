@@ -14,9 +14,13 @@ import { classes } from "../../lib/std";
 import { useAppDispatch } from "../../lib/redux/hooks";
 import { PTTransaction } from "../../types/pt_types";
 import { PasswordReset } from "../components/modals/password_reset";
+import settings from "../../lib/settings";
+import { Order } from "../../types/api_types";
+import EmptyContainerFiller from "../components/empty_container_filler/empty_container_filler";
 
-// TODO: Get rid of "Stock Chart" on the chart title
-// TODO: When you press "Trade" on the dashboard, the trading modal will pop up
+// TODO: Look at potential live updates for open orders
+// TODO: Make sure orders is properly updating with the right data and reflecting changes properly
+// TODO: Componentize the page
 
 interface ContactForm {
     name: string,
@@ -33,151 +37,115 @@ interface UserFormInfo {
 
 export default function Account() {
 
-    const user_info = useSelector(selectUser);
-    const dispatch = useAppDispatch();
+    const user = useSelector(selectUser);
 
-    const [edit_info, set_edit_info] = useState<boolean>(false);
-    const [user_form_info, set_user_form_info] = useState<UserFormInfo>({
+    const [ editInfo, setEditInfo ] = useState<boolean>(false);
+    const [ userFormInfo, setUserFormInfo ] = useState<UserFormInfo>({
         fn: '',
         ln: '',
         email: '',
         username: ''
     });
-    const [contact_us_form, set_contact_us_form] = useState<ContactForm>({
+    const [ contactUsForm, setContactUsForm ] = useState<ContactForm>({
         name: '',
         email: '',
         message: ''
     });
-    const [transactions_state, set_transactions_state] = useState<Array<PTTransaction>>([]);
+    const [ transactionState, setTransactionState ] = useState<Array<PTTransaction>>([]);
 
+    const dispatch = useAppDispatch();
+
+    //User Info Hook
     useEffect(() => {
 
-        if (user_info && !user_form_info.fn) {
+        if (user && !userFormInfo.fn) {
 
-            set_user_form_info({
-                fn: user_info.fn,
-                ln: user_info.ln,
-                email: user_info.email,
-                username: user_info.username,
+            setUserFormInfo({
+                fn: user.fn,
+                ln: user.ln,
+                email: user.email,
+                username: user.username,
             });
 
         }
 
-    }, [user_info]);
+    }, [user]);
 
+    //Orders Hook
     useEffect(() => {
 
-        if (transactions_state.length <= 0) {
+        (async () => {
+            
+            if (transactionState.length <= 0) {
 
-            try {
+                try {
 
-                // TODO: ADD API CALL TO GET TRANSACTIONS
-                const transactionsDummy = [
-                    {
-                        id: 1,
-                        transaction_id: '1a',
-                        date: "2024-05-01",
-                        type: "Buy",
-                        status: "Complete",
-                        ticker: "AAPL",
-                        price: 120.5,
-                        amount: 100,
-                    },
-                    {
-                        id: 2,
-                        transaction_id: '1b',
-                        date: "2024-05-05",
-                        type: "Sell",
-                        status: "Pending",
-                        ticker: "AAPL",
-                        price: 125.75,
-                        amount: 50,
-                    },
-                    {
-                        id: 3,
-                        transaction_id: '1c',
-                        date: "2024-01-10",
-                        type: "Buy",
-                        status: "Failed",
-                        ticker: "GOOGL",
-                        price: 2500.0,
-                        amount: 75,
-                    },
-                    {
-                        id: 4,
-                        transaction_id: '1d',
-                        date: "2024-04-15",
-                        type: "Sell",
-                        status: "Complete",
-                        ticker: "GOOGL",
-                        price: 2550.0,
-                        amount: 25,
-                    },
-                    {
-                        id: 5,
-                        transaction_id: '1e',
-                        date: "2024-07-20",
-                        type: "Buy",
-                        status: "Pending",
-                        ticker: "TSLA",
-                        price: 300.75,
-                        amount: 150,
-                    },
-                    {
-                        id: 6,
-                        transaction_id: '1f',
-                        date: "2024-07-25",
-                        type: "Sell",
-                        status: "Complete",
-                        ticker: "TSLA",
-                        price: 325.5,
-                        amount: 100,
-                    },
-                    {
-                        id: 7,
-                        transaction_id: '1g',
-                        date: "2024-08-26",
-                        type: "Buy",
-                        status: "Complete",
-                        ticker: "AAPL",
-                        price: 120.5,
-                        amount: 100,
-                    },
-                ];
+                    let transactions: PTTransaction[] | null = [];
 
-                set_transactions_state(transactionsDummy);
+                    const orders: Order[] = await fetch(settings.local_api.orders, {
+                        method: 'GET',
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    }).then((res) => res.json());
 
-            } catch (err) {
+                    if (orders.length > 0) {
 
-                // TODO: ERROR HANDLING
-                console.error(err);
+                        
+                        transactions = orders.map((order) => ({
+                            id: orders.findIndex((order) => order.OrderID),
+                            transaction_id: order.OrderID,
+                            date: (() => {
+
+                                const date = new Date(order.Timestamp);
+
+                                return `${date.getUTCFullYear()}-${(date.getUTCMonth() + 1).toString().padStart(2, '0')}-${date.getUTCDate().toString().padStart(2, '0')}`;
+
+                            })(),
+                            type: order.Side,
+                            status: order.Status,
+                            ticker: order.Symbol,
+                            price: (order.Price / 100),
+                            amount: order.Quantity
+                        }));
+
+                        if (transactions && transactions.length > 0) {
+
+                            setTransactionState(transactions);
+
+                        }
+
+                    }
+
+                } catch (err) {
+
+                    console.error(err);
+
+                }
+
             }
+            
+        })();
 
-        }
+    }, []);
 
-    }, [transactions_state]);
-
-    const saveAccInfo = async (acc_info: UserFormInfo) => {
-
-        //TODO: ADD PROGRESS LOADER ON SUBMIT
+    const saveAccInfo = async (accInfo: UserFormInfo) => {
 
         try {
 
             //TODO: ADD API CALL HERE TO UPDATE ACC INFO
             dispatch(updateUser({
-                ...user_info,
-                fn: acc_info.fn,
-                ln: acc_info.ln,
-                email: acc_info.email,
-                username: acc_info.username,
+                ...user,
+                fn: accInfo.fn,
+                ln: accInfo.ln,
+                email: accInfo.email,
+                username: accInfo.username,
             }));
 
-            set_edit_info(false);
+            setEditInfo(false);
 
         } catch (err) {
 
-            // TODO: ADD ERROR HANDLING
-            // TODO: POTENTIALLY AUTO CANCEL DEPENDING ON ERROR
             console.log(err);
 
         }
@@ -186,14 +154,14 @@ export default function Account() {
 
     const cancelEdit: MouseEventHandler = async () => {
 
-        set_user_form_info({
-            fn: user_info.fn,
-            ln: user_info.ln,
-            email: user_info.email,
-            username: user_info.username,
+        setUserFormInfo({
+            fn: user.fn,
+            ln: user.ln,
+            email: user.email,
+            username: user.username,
         });
 
-        set_edit_info(false);
+        setEditInfo(false);
 
     };
 
@@ -206,51 +174,51 @@ export default function Account() {
 
         if (input.value && id === 'email') {
 
-            set_user_form_info({
-                ...user_form_info,
+            setUserFormInfo({
+                ...userFormInfo,
                 email: input.value,
             });
 
         } else if (input.value && id === 'firstName') {
 
-            set_user_form_info({
-                ...user_form_info,
+            setUserFormInfo({
+                ...userFormInfo,
                 fn: input.value,
             });
 
         } else if (input.value && id === 'lastName') {
 
-            set_user_form_info({
-                ...user_form_info,
+            setUserFormInfo({
+                ...userFormInfo,
                 ln: input.value,
             });
 
 
         } else if (input.value && id === 'username') {
 
-            set_user_form_info({
-                ...user_form_info,
+            setUserFormInfo({
+                ...userFormInfo,
                 username: input.value,
             });
 
         } else if (input.value && id === 'name') {
 
-            set_contact_us_form({
-                ...contact_us_form,
+            setContactUsForm({
+                ...contactUsForm,
                 name: input.value
             });
 
         } else if (input.value && id === 'message') {
 
-            set_contact_us_form({
-                ...contact_us_form,
+            setContactUsForm({
+                ...contactUsForm,
                 message: input.value
             });
 
         } else if (input.value && id === 'email_contact') {
 
-            set_contact_us_form({
-                ...contact_us_form,
+            setContactUsForm({
+                ...contactUsForm,
                 email: input.value
             });
 
@@ -272,7 +240,7 @@ export default function Account() {
 
             try {
 
-                console.log(contact);
+                // console.log(contact);
                 //TODO: ADD API CALL TO SUBMIT CONTACT FORM
 
             } catch (err) {
@@ -288,64 +256,68 @@ export default function Account() {
 
     return (
         <div className="flex min-h-screen">
-            <div className="container mx-auto max-w-7xl py-12 px-4 md:px-6">
-                <div className="grid gap-16">
+            <div className="container mx-auto max-w-lg py-12 px-4 md:px-6">
+                <div className="">
                     <section>
-                        <div className="flex items-center justify-between">
+                        <div className="">
                             <h2 className="text-2xl font-bold">Account Information</h2>
                         </div>
-                        {user_info ? (
+                        {user ? (
                             <>
                                 <div>
-                                    <div className="mt-8 grid grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="email">Username</Label>
-                                            <Input
-                                                id="username"
-                                                type="text"
-                                                disabled={!edit_info}
-                                                value={user_form_info.username}
-                                                onChange={handleInputChange}
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="email">Email</Label>
-                                            <Input
-                                                id="email"
-                                                type="email"
-                                                disabled={!edit_info}
-                                                value={user_form_info.email}
-                                                onChange={handleInputChange}
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
+                                    <div className="mt-8">
+                                        <div className="space-y-2 max-w-md">
                                             <Label htmlFor="firstName">First Name</Label>
                                             <Input
                                                 id="firstName"
                                                 type={"text"}
-                                                disabled={!edit_info}
-                                                value={user_form_info.fn}
+                                                disabled={!editInfo}
+                                                value={userFormInfo.fn}
                                                 onChange={handleInputChange}
+                                                className={'text-base sm:text-lg'}
                                             />
                                         </div>
-                                        <div className="space-y-2">
+                                        <div className="space-y-2 max-w-md">
                                             <Label htmlFor="lastName">Last Name</Label>
                                             <Input
                                                 id="lastName"
                                                 type={"text"}
-                                                disabled={!edit_info}
-                                                value={user_form_info.ln}
+                                                disabled={!editInfo}
+                                                value={userFormInfo.ln}
                                                 onChange={handleInputChange}
+                                                className={'text-base sm:text-lg'}
+                                            />
+                                        </div>
+                                        <div className="space-y-2 max-w-md">
+                                            <Label htmlFor="email">Username</Label>
+                                            <Input
+                                                id="username"
+                                                type="text"
+                                                disabled={!editInfo}
+                                                value={userFormInfo.username}
+                                                onChange={handleInputChange}
+                                                className={'text-base sm:text-lg'}
+                                            />
+                                        </div>
+                                        <div className="space-y-2 max-w-md">
+                                            <Label htmlFor="email">Email</Label>
+                                            <Input
+                                                id="email"
+                                                type="email"
+                                                disabled={!editInfo}
+                                                value={userFormInfo.email}
+                                                onChange={handleInputChange}
+                                                className={'text-base sm:text-lg'}
                                             />
                                         </div>
                                     </div>
                                     <div className="flex md:flex-col mt-10 items-center">
-                                        {edit_info ? (
+                                        {editInfo ? (
                                             <>
                                                 <Button
                                                     variant="outline"
                                                     className={classes(['w-64 md:mb-5'])}
-                                                    onClick={() => saveAccInfo(user_form_info)}
+                                                    onClick={() => saveAccInfo(userFormInfo)}
                                                 >
                                                     Save
                                                 </Button>
@@ -361,7 +333,7 @@ export default function Account() {
                                             <Button
                                                 variant="outline"
                                                 className={classes(['w-64 md:mb-5'])}
-                                                onClick={() => set_edit_info(true)}
+                                                onClick={() => setEditInfo(true)}
                                             >
                                                 Edit Account Information
                                             </Button>
@@ -381,7 +353,7 @@ export default function Account() {
                         )}
                     </section>
                     <section>
-                        <div className={classes(['w-full'])}>
+                        <div className={classes(['w-full mt-10'])}>
                             <h2 className="text-2xl font-bold mb-8">Wallet</h2>
                             <div className="w-100 flex justify-between">
                                 <div className="text-muted-foreground">Current Balance</div>
@@ -390,30 +362,33 @@ export default function Account() {
                                         {
                                             style: "currency",
                                             currency: "USD"
-                                        }).format(user_info.wallet)
+                                        }).format(user.wallet)
                                     }
                                 </div>
                             </div>
                         </div>
                     </section>
-                    <section className="w-full">
-                        <Transactions
-                            transactions={transactions_state}
-                        />
+                    <section className="w-full mt-10">
+                        <div className="flex flex-col gap-6 mx-auto w-full  bg-background text-foreground ">
+                            <h1 className="text-3xl font-bold">Order History</h1>
+                            {transactionState.length > 0 ? <Transactions transactions={transactionState}/> :
+                                <EmptyContainerFiller type={'transactions'}/>}
+                        </div>
                     </section>
-                    <section>
+                    <section className={"mt-10"}>
                         <h2 className="text-2xl font-bold">Contact Us</h2>
                         <form
                             className="mt-8 space-y-6"
                             onSubmit={handleSubmit}
                         >
-                            <div className="grid grid-cols-2 gap-6">
+                            <div className="">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Name</Label>
                                     <Input
                                         id="name"
-                                        value={user_info.fn + ' ' + user_info.ln}
+                                        value={user.fn + ' ' + user.ln}
                                         onChange={handleInputChange}
+                                        className={'text-base sm:text-lg'}
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -421,8 +396,9 @@ export default function Account() {
                                     <Input
                                         id="email_contact"
                                         type="email"
-                                        value={user_info.email}
+                                        value={user.email}
                                         onChange={handleInputChange}
+                                        className={'text-base sm:text-lg'}
                                     />
                                 </div>
                             </div>

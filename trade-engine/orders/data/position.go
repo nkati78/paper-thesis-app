@@ -2,22 +2,23 @@ package data
 
 import (
 	"context"
-	"github.com/uptrace/bun"
 	"time"
+
+	"github.com/uptrace/bun"
 )
 
 type Position struct {
 	bun.BaseModel `bun:"table:positions,alias:p"`
 
-	ID         string  `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
-	AvgPrice   float64 `bun:"average_price"`
-	Quantity   uint32  `bun:"quantity"`
-	Direction  string  `bun:"direction"`
-	ProfitLoss float64 `bun:"profit_loss"`
-	Symbol     string  `bun:"symbol"`
-	UserID     string  `bun:"user_id"`
-	OrderID    string  `bun:"order_id"`
-	Status     string  `bun:"status"`
+	ID         string `bun:"id,pk,type:uuid,default:uuid_generate_v4()"`
+	AvgPrice   uint64 `bun:"average_price"`
+	Quantity   uint32 `bun:"quantity"`
+	Direction  string `bun:"direction"`
+	ProfitLoss int64  `bun:"profit_loss"`
+	Symbol     string `bun:"symbol"`
+	UserID     string `bun:"user_id"`
+	OrderID    string `bun:"order_id"`
+	Status     string `bun:"status"`
 
 	CreatedAt time.Time `bun:"created_at"`
 	UpdatedAt time.Time `bun:"updated_at"`
@@ -62,8 +63,8 @@ func (dp DataProvider) UpdatePositionByOrderID(ctx context.Context, position Pos
 	return &position, nil
 }
 
-func (dp DataProvider) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice float64) error {
-	_, err := dp.db.NewUpdate().Model((*Position)(nil)).Set("profit_loss = (quantity * ?) - average_price", newPrice).Where("symbol = ?", symbol).Exec(ctx)
+func (dp DataProvider) UpdatePositionsBySymbol(ctx context.Context, symbol string, newPrice uint64) error {
+	_, err := dp.db.NewUpdate().Model((*Position)(nil)).Set("profit_loss = ABS((? - average_price) * quantity)", newPrice).Where("symbol = ?", symbol).Exec(ctx)
 	if err != nil {
 		return err
 	}

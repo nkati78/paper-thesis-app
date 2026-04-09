@@ -1,21 +1,8 @@
-import NextAuth from "next-auth";
+import NextAuth, { Session } from "next-auth";
 import Google from "@auth/core/providers/google";
 import Credentials from "@auth/core/providers/credentials";
 import settings from "./lib/settings";
 import { JWT } from "@auth/core/jwt";
-
-
-interface credToken extends JWT {
-    id: string,
-    username: string,
-    firstName: string,
-    lastName: string,
-    email: string,
-    token: string,
-    name: string,
-    connection?: string
-    image: string,
-}
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
     providers: [Google, Credentials({
@@ -27,17 +14,15 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             username: {},
             type: {},
         },
-        authorize: async (credentials) => {
+        async authorize(credentials) {
 
             let user;
-
-            console.log(credentials);
 
             if (credentials.type === 'login') {
 
                 const body = {
-                    username: credentials.email,
-                    password: credentials.password
+                    Email: credentials.email,
+                    Password: credentials.password
                 };
 
                 const user_fetch = await fetch(settings.pt_api.login, {
@@ -48,38 +33,22 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                     body: JSON.stringify(body)
                 }).then((res) => res.json());
 
-
                 if (user_fetch.token) {
 
-                    interface augmented_api_login_response {
-                        ID: string,
-                        Username: string,
-                        Email: string,
-                        FirstName: string,
-                        LastName: string
-                    }
-
-                    const augmented_response = user_fetch.user as augmented_api_login_response;
-
-                    user = {
-                        id: augmented_response.ID,
-                        username: augmented_response.Username,
-                        email: augmented_response.Email,
-                        firstName: augmented_response.FirstName,
-                        lastName: augmented_response.LastName
+                    return {
+                        user_id: user_fetch.user.id,
+                        username: user_fetch.user.username,
+                        email: user_fetch.user.email,
+                        firstName: user_fetch.user.firstName,
+                        lastName: user_fetch.user.lastName,
+                        token: user_fetch.token,
+                        // connection: user_fetch.connection,
+                        // image: user_fetch.image || null,
                     };
-
-                    // TODO: Remove augmmentation once responses are consistent
-
-                    user!.token = user_fetch.token;
 
                 } else if (user_fetch.message) {
 
                     throw new Error(user_fetch.message);
-
-                } else {
-
-                    user = null;
 
                 }
 
@@ -107,6 +76,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
                     user = user_fetch.user;
                     user.token = user_fetch.token;
+                    
+                    return user;
 
                 } else if (user_fetch.message) {
 
@@ -116,14 +87,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
             }
 
+            if (!user) {
 
-            // if (!user) {
-            //
-            //     throw new Error("User not found.");
-            //
-            // }
+                throw new Error("User not found.");
 
-            return user;
+            }
+
+            return null;
 
         }
 
@@ -137,57 +107,44 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
     trustHost: true,
     callbacks: {
-        // authorized: async ({ auth }) => {
-        //
-        //     return !!auth
-        //
-        // },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        async signIn({ user, account, profile, email, credentials }) {
+
+        async signIn() {
 
             return true;
 
         },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         async redirect({ url, baseUrl }) {
 
-            return baseUrl;
+            return url.startsWith(baseUrl) ? url : baseUrl;
 
         },
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        async session({ session, user, token }) {
 
-            const aug_tok = token as credToken;
+        async session({ session, token }: { session: Session, token: JWT }) {
 
-            if (aug_tok) {
-
-                // TODO; Figure out why auth.js is having so much trouble augmenting this type
-                // TODO: Rewrite this after login endpoint changes
-                // session.user = {
-                //     id: aug_tok.id,
-                //     username: aug_tok.username,
-                //     firstName: aug_tok.firstName,
-                //     lastName: aug_tok.lastName,
-                //     name: aug_tok.firstName + ' ' + aug_tok.lastName,
-                //     email: aug_tok.email,
-                //     token: aug_tok.token,
-                //     connection: aug_tok.connection,
-                //     image: aug_tok.image
-                // };
-
-            }
-
-            return session;
+            return {
+                ...session,
+                user: token.user,
+            };
 
         },
         async jwt({ token, user, account }) {
 
             if (account?.provider === 'credentials' && user) {
 
-                token = user as credToken;
-
-                return token;
-
+                return {
+                    ...token,
+                    user: {
+                        username: user.username,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        email: user.email,
+                        token: user.token,
+                        connection: user.connection,
+                        user_id: user.id,
+                        image: user.image,
+                    }
+                };
 
             }
 

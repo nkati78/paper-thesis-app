@@ -19,31 +19,49 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         updateFirstName: (state, action: PayloadAction<string>) => {
+
             state.fn = action.payload;
+
         },
         updateLastName: (state, action: PayloadAction<string>) => {
+
             state.ln = action.payload;
+
         },
         updateEmail: (state, action: PayloadAction<string>) => {
+
             state.email = action.payload;
+
         },
         updateAvatar: (state, action: PayloadAction<string>) => {
+
             state.avatar = action.payload;
+
         },
         updateCurrentPath: (state, action: PayloadAction<string>) => {
+
             state.current_path = action.payload;
+
         },
         updatePreviousPath: (state, action: PayloadAction<string>) => {
+
             state.previous_path = action.payload;
+
         },
         updateUserName: (state, action: PayloadAction<string>) => {
+
             state.username = action.payload;
+
         },
         updateWallet: (state, action: PayloadAction<number>) => {
+
             state.wallet = action.payload;
+
         },
         updateDarkMode: (state, action: PayloadAction<boolean>) => {
+
             state.dark_mode = action.payload;
+
         },
         updateUser: (state, action: PayloadAction<userState>) => {
 

@@ -119,3 +119,62 @@ func (us UserService) GetUser(ctx context.Context, userID string) (*User, error)
 		LastName:  user.LastName,
 	}, nil
 }
+
+func (us UserService) CreateWatchlistSymbol(ctx context.Context, symbol, userID string) (*WatchList, error) {
+	count, err := us.dal.CountWatchList(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	wl := data.WatchList{
+		UserID:         userID,
+		Symbol:         symbol,
+		SequenceNumber: count + 1,
+	}
+
+	wlResult, err := us.dal.CreateWatchList(ctx, wl)
+	if err != nil {
+		return nil, err
+	}
+
+	return &WatchList{
+		ID:             wlResult.ID,
+		UserID:         wlResult.UserID,
+		Symbol:         wlResult.Symbol,
+		SequenceNumber: wlResult.SequenceNumber,
+	}, nil
+}
+
+func (us UserService) GetUserWatchList(ctx context.Context, userID string) ([]WatchList, error) {
+	wl, err := us.dal.GetUserWatchList(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var watchList []WatchList
+	for _, w := range wl {
+		watchList = append(watchList, WatchList{
+			ID:             w.ID,
+			UserID:         w.UserID,
+			Symbol:         w.Symbol,
+			SequenceNumber: w.SequenceNumber,
+		})
+	}
+
+	return watchList, nil
+}
+
+func (us UserService) DeleteWatchlistSymbol(ctx context.Context, symbol, userID string) error {
+	wl, err := us.dal.GetUserWatchList(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	for _, w := range wl {
+		if w.Symbol == symbol {
+			return us.dal.DeleteWatchList(ctx, w.ID)
+		}
+	}
+
+	return nil
+}

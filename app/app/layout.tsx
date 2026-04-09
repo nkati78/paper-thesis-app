@@ -5,8 +5,16 @@ import "./globals.css";
 import { auth } from "../auth";
 import { SessionProvider } from "next-auth/react";
 import StoreProvider from "../lib/redux/StoreProvider";
+import settings from "../lib/settings";
+import { positionState, symbolWatchState } from "../types/redux_types";
+import Script from "next/script";
 
-// TODO: Pull user, profile, & balances here and pass to navbar
+export const metadata = {
+    title: 'Paper Thesis',
+    description: 'The only margin call here is your ego',
+    viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, user-scalable=no',
+};
+
 
 export default async function RootLayout ({
     children
@@ -14,10 +22,7 @@ export default async function RootLayout ({
     children: ReactNode
 }) {
 
-    // let user;
-    // let profile;
-    // let balance;
-    let pt_user;
+    let preloadedState;
 
     const session = await auth();
 
@@ -25,18 +30,177 @@ export default async function RootLayout ({
 
         try {
 
-            // TODO: HOOK UP THE API ENDPOINTS BELOW
-            // user = await fetch('');
-            // profile = await fetch('');
-            // balance = await fetch('');
-            pt_user = {
-                id: '12345',
-                fn: session.user.name!.split(' ')[0],
-                ln: session.user.name!.split(' ')[1],
-                email: session.user.email,
-                avatar: session.user.image ? session.user.image : '/assets/placeholder-user.jpg',
-                username: "TangledCheese47",
-                wallet: 20000
+            const symbolsToWatch: string[] = [];
+            const symbolWatch: symbolWatchState[] = [];
+            let positionWatch: positionState[] = [];
+
+            const balance = await fetch(settings.pt_api.balance, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `${session.user.token}`,
+                },
+                cache: 'no-store',
+            }).then((res) => res.json());
+
+            const positionsResponse = await fetch(settings.pt_api.positions, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `${session.user.token}`,
+                },
+                cache: 'no-store',
+            }).then((res) => res.json());
+
+            const watchlistResponse = await fetch(settings.pt_api.watchlist, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `${session.user.token}`,
+                },
+                cache: 'no-store',
+            }).then((res) => res.json());
+
+            const symbolsResponse = await fetch(settings.pt_api.symbols, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `${session.user.token}`,
+                },
+                cache: 'no-store',
+            }).then((res) => res.json());
+
+            if (positionsResponse && positionsResponse.length > 0) {
+
+                for (let i = 0; i < positionsResponse.length; i++) {
+
+                    const position = positionsResponse[i];
+
+                    symbolsToWatch.push(position.symbol);
+
+                    positionWatch.push({
+                        id: position.id,
+                        userId: position.userId,
+                        currentPrice: 0,
+                        costBasis: (position.costBasis ? position.costBasis : position.averagePrice) * position.quantity, //TODO: Change once costBasis is fixed
+                        averagePrice: position.averagePrice,
+                        quantity: position.quantity,
+                        direction: position.direction,
+                        orderId: position.orderId,
+                        profitLoss: position.profitLoss,
+                        symbol: position.symbol,
+                        status: position.status,
+                        value: 0,
+                        dayChangePct: 0,
+                        dayChangeDollar: 0,
+                        totalChangeDollar: 0,
+                        totalChangePct: 0,
+                        createdAt: position.createdAt,
+                        updatedAt: position.updatedAt,
+                    });
+
+
+
+                }
+
+            }
+
+            if (watchlistResponse && watchlistResponse.length > 0) {
+
+                for (let i = 0; i < watchlistResponse.length; i++) {
+
+                    const watchlistItem = watchlistResponse[i];
+
+                    if (!symbolsToWatch.includes(watchlistItem.symbol)) {
+
+                        symbolsToWatch.push(watchlistItem.symbol);
+
+                    }
+
+                }
+
+            }
+
+            if (symbolsToWatch.length === 0) {
+
+                symbolsToWatch.push('MSFT');
+
+            }
+
+            if (symbolsToWatch.length > 0) {
+
+                for (let i = 0; i < symbolsToWatch.length; i++) {
+
+                    const symbol = symbolsToWatch[i];
+
+                    const symbolFetch = await fetch(`${settings.pt_api.symbol}/${symbol}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            "Authorization": `${session.user.token}`,
+                        },
+                        cache: 'no-store',
+                    }).then((res) => res.json());
+
+                    symbolWatch.push({
+                        id: symbolFetch.id,
+                        symbol: symbolFetch.symbol,
+                        exchange: '', //TODO: Pull exchange from the bulk symbols response
+                        price: symbolFetch.price,
+                        lastPrice: symbolFetch.startingPrice,
+                        dayChangeDollar: symbolFetch.priceChange,
+                        dayChangePercent: symbolFetch.percentageChange,
+                        startingPrice: symbolFetch.startingPrice,
+                        yesterdayClose: symbolFetch.yesterdayClose,
+                        yesterdayOpen: symbolFetch.yesterdayOpen,
+                        yesterdayHigh: symbolFetch.yesterdayHigh,
+                        yesterdayLow: symbolFetch.yesterdayLow,
+                        todayOpen: symbolFetch.todayOpen,
+                        todayHigh: symbolFetch.todayHigh,
+                        todayLow: symbolFetch.todayLow,
+                    });
+
+                    positionWatch = positionWatch.map(pos => {
+
+                        if (pos.symbol === symbol) {
+
+                            return {
+                                ...pos,
+                                currentPrice: symbolFetch.price,
+                                value: symbolFetch.price * pos.quantity,
+                                dayChangePct: (((symbolFetch.price * pos.quantity) - (symbolFetch.yesterdayClose * pos.quantity)) / (symbolFetch.price * pos.quantity)),
+                                dayChangeDollar: (symbolFetch.price * pos.quantity) - (symbolFetch.yesterdayClose * pos.quantity),
+                                totalChangeDollar: (symbolFetch.price * pos.quantity) - (pos.averagePrice * pos.quantity), //TODO: Change to cost basis once fixed?
+                                totalChangePct: (((symbolFetch.price * pos.quantity) - (pos.averagePrice * pos.quantity)) / (pos.averagePrice * pos.quantity)), //TODO: Change to cost basis once fixed?
+                            };
+
+                        }
+
+                        return pos;
+
+                    });
+
+                }
+
+            }
+
+            preloadedState = {
+                positions: positionWatch || [],
+                user: {
+                    id: '12345',
+                    fn: session.user.firstName,
+                    ln: session.user.lastName,
+                    email: session.user.email,
+                    avatar: session.user.image ? session.user.image : '/assets/placeholder-user.jpg',
+                    dark_mode: true,
+                    current_path: '/dashboard',
+                    previous_path: '/auth/login',
+                    username: session.user.username,
+                    wallet: balance.balance
+                },
+                watchlist: watchlistResponse || [],
+                symbols: symbolsResponse || [],
+                symbolWatch: symbolWatch,
             };
 
         } catch (err) {
@@ -49,27 +213,24 @@ export default async function RootLayout ({
 
     return (
         <html lang="en">
-
+            <Script strategy={"afterInteractive"} src="https://www.googletagmanager.com/gtag/js?id=G-TT1BZZBVZ3"></Script>
+            <Script id={"google-analytics"} strategy={"afterInteractive"}>
+                {`window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('js', new Date());
+    
+                        gtag('config', 'G-TT1BZZBVZ3')`};
+            </Script>
             <body className={classes(['flex min-h-screen w-full flex-col dark'])} >
-
                 <SessionProvider session={session}>
-
-                    <StoreProvider>
-
+                    <StoreProvider preloadedState={preloadedState}>
                         {session?.user ? (
-                            <Navbar
-                                userData={pt_user}
-                            />
+                            <Navbar/>
                         ) : ''}
-
                         {children}
-
                     </StoreProvider>
-
                 </SessionProvider>
-
             </body>
-
         </html>
     );
 
