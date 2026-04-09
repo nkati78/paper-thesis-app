@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+
 	"github.com/paper-thesis/trade-engine/users/data"
 	"github.com/paper-thesis/trade-engine/users/models"
 	"golang.org/x/crypto/bcrypt"

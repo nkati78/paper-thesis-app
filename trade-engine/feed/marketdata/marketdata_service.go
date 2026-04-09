@@ -45,6 +45,11 @@ type SymbolData struct {
 	OpenPrice        uint64 `json:"openPrice"`
 }
 
+type SymbolData struct {
+	Symbol   string `json:"symbol"`
+	Exchange string `json:"exchange"`
+}
+
 func (m MarketDataService) GetMarketData(ctx context.Context, symbol string) (*MarketData, error) {
 	// Get market data
 	data, err := m.dal.GetMarketPrice(ctx, symbol)
